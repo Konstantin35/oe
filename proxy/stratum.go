@@ -131,6 +131,9 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 		splitData := strings.Split(params[0], ".")
 		params[0] = splitData[0]
+        if params[0][:2] != "0x" {
+            params[0] = "0x" + params[0]
+        }
 		reply , errReply := s.handleLoginRPC(cs, params, req.Worker)
 		if errReply != nil {
 			return cs.sendTCPNHError(req.Id, []string{
@@ -161,17 +164,29 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 
 		splitData := strings.Split(params[0], ".")
-		id := splitData[1]
+		id := splitData[0]
+        if id[:2] != "0x" {
+            id = "0x" + id
+        }
 
 		if cs.JobDeatils.JobID != params[1] {
 			return cs.sendTCPNHError(req.Id, "wrong job id")
 		}
 		nonce := s.Extranonce + params[2]
 
+        if nonce[:2] != "0x" {
+            nonce = "0x" + nonce
+        }
+
+        seedHash := cs.JobDeatils.SeedHash
+        if seedHash[:2] != "0x" {
+            seedHash = "0x" + seedHash
+        }
+
 		params = []string{
 			nonce,
-			cs.JobDeatils.SeedHash,
-			cs.JobDeatils.SeedHash,
+            seedHash,
+            seedHash,
 		}
 
 		reply, errReply := s.handleTCPSubmitRPC(cs, id, params)
@@ -319,7 +334,7 @@ func (s *ProxyServer) broadcastNewJobs() {
 
 func generateRandomString(strlen int) string {
 	rand.Seed(time.Now().UTC().UnixNano())
-	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	const chars = "abcdef0123456789"
 	result := make([]byte, strlen)
 	for i := 0; i < strlen; i++ {
 		result[i] = chars[rand.Intn(len(chars))]
@@ -381,6 +396,14 @@ func(cs *Session) sendJob(s *ProxyServer, id *json.RawMessage) error {
 		})
 	}
 
+    if reply[0][0:2] == "0x" {
+        reply[0] = reply[0][2:]
+    }
+
+    if reply[1][0:2] == "0x" {
+        reply[1] = reply[1][2:]
+    }
+
 	cs.JobDeatils = jobDetails{
 		JobID: generateRandomString(8),
 		SeedHash: reply[1],
@@ -423,11 +446,20 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 		n++
 		bcast <- n
 
+        seedHash := t.Seed
+        headerHash := t.Header
+        if seedHash[:2] == "0x" {
+            seedHash = seedHash[2:]
+        }
+        if headerHash[:2] == "0x" {
+            headerHash = headerHash[2:]
+        }
+
 		go func(cs *Session) {
 			cs.JobDeatils = jobDetails{
 				JobID: generateRandomString(8),
-				SeedHash: t.Seed,
-				HeaderHash: t.Header,
+				SeedHash: seedHash,
+				HeaderHash: headerHash,
 			}
 
 			resp := JSONRpcReqNH{
