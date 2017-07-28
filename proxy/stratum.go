@@ -116,7 +116,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 
 		if params[1] != "EthereumStratum/1.0.0"{
 			log.Println("Unsupported stratum version from ", cs.ip)
-			return cs.sendTCPNHError(req.Id, "unsupported ethereum version")
+            var errorArray []interface{}
+            errorArray = append(errorArray, -1)
+            errorArray = append(errorArray, "unsupported ethereum version")
+            errorArray = append(errorArray, nil)
+			return cs.sendTCPNHError(req.Id, errorArray)
 		}
 
 		resp := cs.getNotificationResponse(s, req.Id)
@@ -136,10 +140,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
         }
 		reply , errReply := s.handleLoginRPC(cs, params, req.Worker)
 		if errReply != nil {
-			return cs.sendTCPNHError(req.Id, []string{
-				string(errReply.Code),
-				errReply.Message,
-			})
+            var errorArray []interface{}
+            errorArray = append(errorArray, errReply.Code)
+            errorArray = append(errorArray, errReply.Message)
+            errorArray = append(errorArray, nil)
+			return cs.sendTCPNHError(req.Id, errorArray)
 		}
 
 		resp := JSONRpcResp{Id:req.Id, Result:reply, Error:nil}
@@ -170,7 +175,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
         }
 
 		if cs.JobDeatils.JobID != params[1] {
-			return cs.sendTCPNHError(req.Id, "wrong job id")
+            var errorArray []interface{}
+            errorArray = append(errorArray, -1)
+            errorArray = append(errorArray, "wrong job id")
+            errorArray = append(errorArray, nil)
+			return cs.sendTCPNHError(req.Id, errorArray)
 		}
 		nonce := s.Extranonce + params[2]
 
@@ -191,10 +200,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 
 		reply, errReply := s.handleTCPSubmitRPC(cs, id, params)
 		if errReply != nil {
-			return cs.sendTCPNHError(req.Id, []string{
-				string(errReply.Code),
-				errReply.Message,
-			})
+            var errorArray []interface{}
+            errorArray = append(errorArray, errReply.Code)
+            errorArray = append(errorArray, errReply.Message)
+            errorArray = append(errorArray, nil)
+			return cs.sendTCPNHError(req.Id, errorArray)
 		}
 		resp := JSONRpcResp{
 			Id: req.Id,
@@ -206,6 +216,16 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 
 		return cs.sendJob(s, req.Id)
+
+    case "mining.extranonce.subscribe":
+        cs.protocolType = "stratum_nicehash"
+		var params []string
+		err := json.Unmarshal(*req.Params, &params)
+		if err != nil {
+			return errors.New("invalid params")
+		}
+
+        return cs.sendExtranonce(s, req.Id)
 
 	case "eth_submitLogin":
         cs.protocolType = "stratum"
@@ -244,8 +264,16 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
         cs.protocolType = "stratum"
 		return cs.sendTCPResult(req.Id, true)
 	default:
-		errReply := s.handleUnknownRPC(cs, req.Method)
-		return cs.sendTCPError(req.Id, errReply)
+        if req.Method[:6] == "mining" {
+            var errorArray []interface{}
+            errorArray = append(errorArray, -1)
+            errorArray = append(errorArray, "unknown method")
+            errorArray = append(errorArray, nil)
+		    return cs.sendTCPNHError(req.Id, errorArray)
+        } else {
+		    errReply := s.handleUnknownRPC(cs, req.Method)
+		    return cs.sendTCPError(req.Id, errReply)
+        }
 	}
 }
 
@@ -390,10 +418,11 @@ func(cs *Session) sendTCPNHReq(resp JSONRpcReqNH)  error {
 func(cs *Session) sendJob(s *ProxyServer, id *json.RawMessage) error {
 	reply, errReply := s.handleGetWorkRPC(cs)
 	if errReply != nil {
-		return cs.sendTCPNHError(id, []string{
-			string(errReply.Code),
-			errReply.Message,
-		})
+        var errorArray []interface{}
+        errorArray = append(errorArray, errReply.Code)
+        errorArray = append(errorArray, errReply.Message)
+        errorArray = append(errorArray, nil)
+		return cs.sendTCPNHError(id, errorArray)
 	}
 
     if reply[0][0:2] == "0x" {
@@ -421,6 +450,41 @@ func(cs *Session) sendJob(s *ProxyServer, id *json.RawMessage) error {
 	}
 
 	return cs.sendTCPNHReq(resp)
+}
+
+func (cs *Session) sendExtranonce(s *ProxyServer, id *json.RawMessage) error {
+    if cs.JobDeatils.JobID == "" {
+        reply, errReply := s.handleGetWorkRPC(cs)
+        if errReply != nil {
+            var errorArray []interface{}
+            errorArray = append(errorArray, errReply.Code)
+            errorArray = append(errorArray, errReply.Message)
+            errorArray = append(errorArray, nil)
+		    return cs.sendTCPNHError(id, errorArray)
+        }
+
+        if reply[0][0:2] == "0x" {
+            reply[0] = reply[0][2:]
+        }
+
+        if reply[1][0:2] == "0x" {
+            reply[1] = reply[1][2:]
+        }
+
+        cs.JobDeatils = jobDetails{
+            JobID: generateRandomString(8),
+            SeedHash: reply[1],
+            HeaderHash: reply[0],
+        }
+    }
+
+    resp := JSONRpcReqNH{
+        Method:"mining.set_extranonce",
+        Params: []interface{}{
+            cs.JobDeatils.JobID,
+        },
+    }
+    return cs.sendTCPNHReq(resp)
 }
 
 func (s *ProxyServer) broadcastNewJobsNH() {
