@@ -181,7 +181,7 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
             errorArray = append(errorArray, nil)
 			return cs.sendTCPNHError(req.Id, errorArray)
 		}
-		nonce := s.Extranonce + params[2]
+		nonce := cs.JobDeatils.JobID + params[2]
 
         if nonce[:2] != "0x" {
             nonce = "0x" + nonce
@@ -192,9 +192,14 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
             seedHash = "0x" + seedHash
         }
 
+        headerHash := cs.JobDeatils.HeaderHash
+        if headerHash[:2] != "0x" {
+            headerHash = "0x" + headerHash
+        }
+
 		params = []string{
 			nonce,
-            seedHash,
+            headerHash,
             seedHash,
 		}
 
@@ -497,7 +502,7 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 	defer s.sessionsMu.RUnlock()
 
 	count := len(s.sessions)
-	log.Printf("Broadcasting new job to %v stratum nice hash  miners", count)
+	log.Printf("Broadcasting new nice hash job to %v stratum nice hash  miners", count)
 
 	start := time.Now()
 	bcast := make(chan int, 1024)

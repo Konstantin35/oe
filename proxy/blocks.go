@@ -93,6 +93,7 @@ func (s *ProxyServer) fetchBlockTemplate() {
 	// Stratum
 	if s.config.Proxy.Stratum.Enabled {
 		go s.broadcastNewJobs()
+        go s.broadcastNewJobsNH()
 	}
 }
 
