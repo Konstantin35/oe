@@ -249,7 +249,7 @@ func (u *BlockUnlocker) unlockPendingBlocks() {
 	}
 
 	currentHeight, err := u.rpc.GetBlockNumber()
-	if err != nil {
+	if err != nil || currentHeight == 0 {
 		u.halt = true
 		u.lastFail = err
 		log.Printf("Unable to get current blockchain height from node: %v", err)
@@ -340,7 +340,7 @@ func (u *BlockUnlocker) unlockAndCreditMiners() {
 	}
 
 	currentHeight, err := u.rpc.GetBlockNumber()
-	if err != nil {
+	if err != nil || currentHeight == 0 {
 		u.halt = true
 		u.lastFail = err
 		log.Printf("Unable to get current blockchain height from node: %v", err)

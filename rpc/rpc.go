@@ -103,15 +103,15 @@ func (r *RPCClient) GetPendingBlock() (*GetBlockReplyPart, error) {
 func (r *RPCClient) GetBlockNumber() (int64, error) {
     rpcResp, err := r.doPost(r.Url, "eth_blockNumber", []interface{}{})
     if err != nil {
-        return nil, err
+        return 0, err
     }
     if rpcResp.Result == nil {
-        return nil, nil
+        return 0, nil
     }
     var reply *string
     err = json.Unmarshal(*rpcResp.Result, &reply)
     if err != nil {
-        return nil, err
+        return 0, err
     }
     var number int64
 	number, err = strconv.ParseInt(strings.Replace(reply, "0x", "", -1), 16, 64)
