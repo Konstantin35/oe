@@ -100,6 +100,24 @@ func (r *RPCClient) GetPendingBlock() (*GetBlockReplyPart, error) {
 	return nil, nil
 }
 
+func (r *RPCClient) GetBlockNumber() (int64, error) {
+    rpcResp, err := r.doPost(r.Url, "eth_blockNumber", []interface{}{})
+    if err != nil {
+        return nil, err
+    }
+    if rpcResp.Result == nil {
+        return nil, nil
+    }
+    var reply *string
+    err = json.Unmarshal(*rpcResp.Result, &reply)
+    if err != nil {
+        return nil, err
+    }
+    var number int64
+	number, err = strconv.ParseInt(strings.Replace(reply, "0x", "", -1), 16, 64)
+    return number, err
+}
+
 func (r *RPCClient) GetBlockByHeight(height int64) (*GetBlockReply, error) {
 	params := []interface{}{fmt.Sprintf("0x%x", height), true}
 	return r.getBlockBy("eth_getBlockByNumber", params)

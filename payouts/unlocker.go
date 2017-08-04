@@ -248,18 +248,11 @@ func (u *BlockUnlocker) unlockPendingBlocks() {
 		return
 	}
 
-	current, err := u.rpc.GetPendingBlock()
+	currentHeight, err := u.rpc.GetBlockNumber()
 	if err != nil {
 		u.halt = true
 		u.lastFail = err
 		log.Printf("Unable to get current blockchain height from node: %v", err)
-		return
-	}
-	currentHeight, err := strconv.ParseInt(strings.Replace(current.Number, "0x", "", -1), 16, 64)
-	if err != nil {
-		u.halt = true
-		u.lastFail = err
-		log.Printf("Can't parse pending block number: %v", err)
 		return
 	}
 
@@ -346,18 +339,11 @@ func (u *BlockUnlocker) unlockAndCreditMiners() {
 		return
 	}
 
-	current, err := u.rpc.GetPendingBlock()
+	currentHeight, err := u.rpc.GetBlockNumber()
 	if err != nil {
 		u.halt = true
 		u.lastFail = err
 		log.Printf("Unable to get current blockchain height from node: %v", err)
-		return
-	}
-	currentHeight, err := strconv.ParseInt(strings.Replace(current.Number, "0x", "", -1), 16, 64)
-	if err != nil {
-		u.halt = true
-		u.lastFail = err
-		log.Printf("Can't parse pending block number: %v", err)
 		return
 	}
 
