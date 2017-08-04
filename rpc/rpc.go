@@ -114,7 +114,7 @@ func (r *RPCClient) GetBlockNumber() (int64, error) {
         return 0, err
     }
     var number int64
-	number, err = strconv.ParseInt(strings.Replace(reply, "0x", "", -1), 16, 64)
+	number, err = strconv.ParseInt(strings.Replace(*reply, "0x", "", -1), 16, 64)
     return number, err
 }
 
