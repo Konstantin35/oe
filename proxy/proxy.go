@@ -41,6 +41,7 @@ type jobDetails struct {
 	JobID string
 	SeedHash string
 	HeaderHash string
+    Extranonce string
 }
 
 type Session struct {
