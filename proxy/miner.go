@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/ethash"
+	"github.com/shengupiao/ethash"
 	"github.com/ethereum/go-ethereum/common"
 )
 
@@ -15,7 +15,6 @@ var hasher = ethash.New()
 func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, params []string) (bool, bool) {
 	nonceHex := params[0]
 	hashNoNonce := params[1]
-	mixDigest := params[2]
 	nonce, _ := strconv.ParseUint(strings.Replace(nonceHex, "0x", "", -1), 16, 64)
 	shareDiff := s.config.Proxy.Difficulty
 
@@ -30,7 +29,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 		hashNoNonce: common.HexToHash(hashNoNonce),
 		difficulty:  big.NewInt(shareDiff),
 		nonce:       nonce,
-		mixDigest:   common.HexToHash(mixDigest),
+		mixDigest:   common.HexToHash(""),
 	}
 
 	block := Block{
@@ -38,14 +37,17 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 		hashNoNonce: common.HexToHash(hashNoNonce),
 		difficulty:  h.diff,
 		nonce:       nonce,
-		mixDigest:   common.HexToHash(mixDigest),
+		mixDigest:   common.HexToHash(""),
 	}
 
-	if !hasher.Verify(share) {
+    verified, mixDigest := hasher.Verify(share)
+	if !verified {
 		return false, false
 	}
+    params[2] = mixDigest
 
-	if hasher.Verify(block) {
+    verified, _ = hasher.Verify(block)
+	if verified {
 		ok, err := s.rpc().SubmitBlock(params)
 		if err != nil {
 			log.Printf("Block submission failure at height %v for %v: %v", h.height, t.Header, err)

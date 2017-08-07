@@ -235,7 +235,7 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		params = []string{
 			nonce,
             headerHash,
-            seedHash,
+            "",
 		}
 
 		reply, errReply := s.handleTCPSubmitRPC(cs, id, params)
