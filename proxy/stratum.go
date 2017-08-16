@@ -372,7 +372,12 @@ func (s *ProxyServer) broadcastNewJobs() {
 	s.sessionsMu.RLock()
 	defer s.sessionsMu.RUnlock()
 
-	count := len(s.sessions)
+    count := 0
+	for m, _ := range s.sessions {
+        if m.protocolType == "stratum" {
+            count++
+        }
+	}
 	log.Printf("Broadcasting new job to %v stratum miners", count)
 
 	start := time.Now()
@@ -452,7 +457,12 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 	s.sessionsMu.RLock()
 	defer s.sessionsMu.RUnlock()
 
-	count := len(s.sessions)
+    count := 0
+	for m, _ := range s.sessions {
+        if m.protocolType == "stratum_nicehash" {
+            count++
+        }
+	}
 	log.Printf("Broadcasting new nice hash job to %v stratum nice hash  miners", count)
 
 	start := time.Now()
