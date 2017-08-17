@@ -72,6 +72,12 @@
 			"versionExact": "v1.6.7"
 		},
 		{
+			"checksumSHA1": "gnu200Dh4vKUdl3zMSkvjQEG+Dk=",
+			"path": "github.com/ethereum/go-ethereum/crypto/secp256k1/libsecp256k1",
+			"revision": "0b978f91b6adcc4b595391096a72db73bc625bcf",
+			"revisionTime": "2017-08-16T12:19:33Z"
+		},
+		{
 			"checksumSHA1": "yunX3AjO6JiMz0NSY/krvG3VWsk=",
 			"path": "github.com/ethereum/go-ethereum/crypto/sha3",
 			"revision": "ab5646c532292b51e319f290afccf6a44f874372",
