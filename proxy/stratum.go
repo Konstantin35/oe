@@ -175,6 +175,7 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 
 		reply , errReply := s.handleLoginRPC(cs, params, req.Worker)
 		if errReply != nil {
+      log.Println("handleLoginRPC error: ", errReply)
             return cs.sendTCPNHError(req.Id, []interface{}{
                 errReply.Code,
                 errReply.Message,
