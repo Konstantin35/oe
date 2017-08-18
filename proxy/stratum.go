@@ -305,6 +305,7 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
         cs.protocolType = "stratum"
 		return cs.sendTCPResult(req.Id, true)
 	default:
+    log.Println("Handle unknow stratum method: ", req.Method)
         if req.Method[:6] == "mining" {
             var errorArray []interface{}
             errorArray = append(errorArray, -1)
