@@ -252,7 +252,7 @@ func (r *RedisClient) WriteStaleShare(login string, share string) error {
 }
 
 func (r *RedisClient) WriteInvalidShare(login string, share string) error {
-	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * 1).Unix(), 10))
+	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
     _, err := r.client.ZAdd(r.formatKey("invalidShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
 	return err
 }
