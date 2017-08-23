@@ -30,8 +30,8 @@ type PayoutsConfig struct {
 	// In Shannon
 	Threshold int64 `json:"threshold"`
 	BgSave    bool  `json:"bgsave"`
-    UseWhiteList bool `json:"useWhiteList"`
-    WhiteList []string `json:"whiteList"`
+    UseBlackList bool `json:"useBlackList"`
+    BlackList []string `json:"blackList"`
 }
 
 func (self PayoutsConfig) GasHex() string {
@@ -128,8 +128,8 @@ func (u *PayoutsProcessor) process() {
 		if !u.reachedThreshold(amountInShannon) {
 			continue
 		}
-        if !u.checkWhiteList(login) {
-            log.Println("Payee %v is not in white list, ignored", login)
+        if u.checkBlackList(login) {
+            log.Println("Payee %v is in black list, ignored", login)
             continue
         }
 		mustPay++
@@ -249,11 +249,11 @@ func (self PayoutsProcessor) checkPeers() bool {
 	return true
 }
 
-func (self PayoutsProcessor) checkWhiteList(address string) bool {
-    if !self.config.UseWhiteList {
+func (self PayoutsProcessor) checkBlackList(address string) bool {
+    if !self.config.UseBlackList {
         return true
     }
-    for _, v := range self.config.WhiteList {
+    for _, v := range self.config.BlackList {
         if v == address {
             return true
         }
