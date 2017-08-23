@@ -186,6 +186,7 @@ func (r *RedisClient) WriteShare(login, id string, params []string, diff int64, 
 		tx.HIncrBy(r.formatKey("stats"), "roundShares", diff)
 		return nil
 	})
+    r.WriteAcceptedShare(login, params[0])
 	return false, err
 }
 
@@ -236,6 +237,56 @@ func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string
 	tx.ZAdd(r.formatKey("hashrate", login), redis.Z{Score: float64(ts), Member: join(diff, id, ms)})
 	tx.Expire(r.formatKey("hashrate", login), expire) // Will delete hashrates for miners that gone
 	tx.HSet(r.formatKey("miners", login), "lastShare", strconv.FormatInt(ts, 10))
+}
+
+func (r *RedisClient) WriteAcceptedShare(login string, share string) error {
+	r.client.ZRemRangeByScore(r.formatKey("acceptedShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
+    _, err := r.client.ZAdd(r.formatKey("acceptedShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	return err
+}
+
+func (r *RedisClient) WriteStaleShare(login string, share string) error {
+	r.client.ZRemRangeByScore(r.formatKey("staleShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
+    _, err := r.client.ZAdd(r.formatKey("staleShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	return err
+}
+
+func (r *RedisClient) WriteInvalidShare(login string, share string) error {
+	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * 1).Unix(), 10))
+    _, err := r.client.ZAdd(r.formatKey("invalidShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	return err
+}
+
+func (r *RedisClient) WriteDuplicateShare(login string, share string) error {
+	r.client.ZRemRangeByScore(r.formatKey("duplicateShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
+    _, err := r.client.ZAdd(r.formatKey("duplicateShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	return err
+}
+
+// accepted, stale, duplicate, invalid
+func (r *RedisClient) GetShareRatio(login string) [4]int {
+    oneHourAgo := strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10)
+	r.client.ZRemRangeByScore(r.formatKey("acceptedShare", login), "-inf", oneHourAgo)
+	r.client.ZRemRangeByScore(r.formatKey("staleShare", login), "-inf", oneHourAgo)
+	r.client.ZRemRangeByScore(r.formatKey("duplicateShare", login), "-inf", oneHourAgo)
+	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", oneHourAgo)
+    accepted, err := r.client.ZCount(r.formatKey("acceptedShare", login), "-inf", "+inf").Result()
+    if err != nil {
+        accepted = 0
+    }
+    stale, err := r.client.ZCount(r.formatKey("staleShare", login), "-inf", "+inf").Result()
+    if err != nil {
+        stale = 0
+    }
+    duplicate, err := r.client.ZCount(r.formatKey("duplicateShare", login), "-inf", "+inf").Result()
+    if err != nil {
+        duplicate = 0
+    }
+    invalid, err := r.client.ZCount(r.formatKey("invalidShare", login), "-inf", "+inf").Result()
+    if err != nil {
+        invalid = 0
+    }
+    return [4]int{int(accepted), int(stale), int(duplicate), int(invalid)}
 }
 
 func (r *RedisClient) formatKey(args ...interface{}) string {

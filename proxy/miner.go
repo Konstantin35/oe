@@ -21,6 +21,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 	h, ok := t.headers[hashNoNonce]
 	if !ok {
 		log.Printf("Stale share from %v@%v", login, ip)
+        s.backend.WriteStaleShare(login, nonceHex)
 		return false, false
 	}
 
@@ -42,6 +43,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 
     verified, mixDigest := hasher.Verify(share)
 	if !verified {
+        s.backend.WriteInvalidShare(login, nonceHex)
 		return false, false
 	}
     params[2] = mixDigest
