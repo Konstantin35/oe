@@ -1,0 +1,137 @@
+app:
+  home: '首页'
+  help: '帮助'
+  blocks: '区块'
+  payments: '支付'
+  miners: '矿工'
+  about: '关于'
+index:
+  title: '新块'
+  featureTitle: '为何选择 NewBlock？'
+  lookupTitle: '查询状态 & 支付历史'
+  lookupPlaceholder: '输入挖矿地址'
+  lookup: '查询'
+  minersTotal: '在线矿工'
+  poolHashrate: '矿池算力'
+  lastBlockFound: '最近爆块'
+  difficulty: '全网难度'
+  hashrate: '全网算力'
+  height: '区块高度'
+  roundVariance: '本轮难度'
+  feature01: '匿名挖矿，无须注册'
+  feature02: '同时支持 PROP/PPS 两种挖矿方式'
+  feature03: '高效挖矿引擎，低叔块率'
+  feature04: '区块、叔块奖励和交易费全部返还给矿工'
+  feature05: '实时支付'
+  feature06: '最小支付阈值: 0.1'
+  feature07: '高防 DDOS 服务器'
+  feature08: '24 * 7 小时高可用服务'
+  feature09: '完整的 stratum 挖矿协议支持'
+  feature10: '精确的算力报告'
+  feature11: '详实的数据统计'
+  feature12: '基于邮件的通知系统，快速知晓矿机故障'
+  feature13: '仅 1% 矿池费用'
+  help: "
+    <div class=\"page-header\">
+      <h1>挖矿需知</h1>
+    </div>
+    <h4>Stratum 协议挖矿</h4>
+    <p>本矿池支持大部分流行矿机软件，我们推荐你使用
+      <a href=\"https://bitcointalk.org/index.php?topic=1433925.0\" rel=\"nofollow\" target=\"_blank\">claymore</a>，挖矿更加高效
+    </p>
+    <p>
+      <strong>完整实例:</strong>
+      <pre>
+        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
+        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
+      </pre>
+    </p>
+    <dl class=\"dl-horizontal\">
+      <dt><b style=\"color:red;\">huabei.newblock.org:8008</b></dt>
+      <dd>
+        <p>NewBlock 在全世界有多个节点，你可以选择离你的矿机最近的节点：</p>
+        <table class=\"table table-bordered table-condensed\">
+          <tr>
+            <td>华北</td><td>huabei.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>华南</td><td>huanan.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>香港</td><td>us.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>美国</td><td>us.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>欧洲</td><td>eu.newblock.org:8008</td>
+          </tr>
+        </table>
+      </dd>
+    
+      <dt>YOUR_ETH_ADDRESS</dt>
+      <dd>你的挖矿地址，可以是交易所的钱包地址，比如
+        <a href=\"http://poloniex.com\" rel=\"nofollow\" target=\"_blank\">Poloniex</a>
+        、<a href=\"http://bittrex.com\" rel=\"nofollow\" target=\"_blank\">Bittrex</a>等<br/>
+        如：<code>0x05a56E2D52c817161883f50c441c3228CFe54d9f</code>.
+      </dd>
+      <dt>RIG_ID</dt>
+      <dd>
+        你的矿机名字，该部分可以省略。
+        如： <code>rig-1</code>
+      </dd>
+    </dl>
+  "
+block:
+  title: '矿池将支付所有区块奖励、交易费和叔块奖励'  
+  description: "区块成熟需要<u>最多</u> </strong> <span class=\"label label-success\">520</span> <strong> 个"
+  blocks: '区块'
+  immature: '未成熟'
+  new: '新块'
+  matured: '已成熟'
+  col1: '高度'
+  col2: '区块 Hash'
+  col3: '爆块时间'
+  col4: '难度'
+  col5: '奖励数量'
+  noMature: '暂无成熟区块'
+  noImmature: '暂无未成熟区块'
+  noNew: '暂无新区块'
+payment:
+  title: "矿池将从挖矿地址进行打款"
+  totalCount: '总支付笔数：'
+  col1: '时间'
+  col2: '金额'
+  col3: '地址'
+  col4: '交易ID'
+  noPayouts: '暂无支付信息'
+  latest: '最近支付'
+miner:
+  totalHashrate: '总算力：'
+  totalMiner: '总矿工数：'
+  miners: '矿工：'
+  col1: '挖矿地址'
+  col2: '算力'
+  col3: '上次提交'
+  noMiner: '暂无矿工'
+account:
+  imBalance: '未成熟余额：'
+  imBalanceDesc: '等待区块成熟的金额'
+  pending: '待支付余额：'
+  pendingDesc: '已经成熟，等待支付'
+  cur: '正在支付：'
+  total: '共计支付： '
+  lastShare: '最近一次贡献'
+  workersOnline: '在线矿机：'
+  workers: '矿机'
+  payouts: '支付'
+  hashrate30m: ' 算力 (30m): '
+  hashrate3h: '  算力 (3h): '
+  found: ' 发现区块： '
+  totalPyaments: '支付笔数：'
+  round: ' 本轮贡献：'
+  roundDesc: ' 在本轮挖矿周期中你的贡献百分比'
+  epoch: 'Epoch 转换'
+
+
+

@@ -1,47 +1,67 @@
 <div class="jumbotron">
   <div class="container">
     <div class="row">
-      <div class="col-md-5">
-        <h1 style="font-size: 24px">
-          <strong>Open Ethereum Pool</strong>
-        </h1>
-        <strong>Min. payout threshold: {{config.PayoutThreshold}}</strong>, Payouts run twice per day.<br/>
-        <span class="label label-success">PROP</span> Stable and profitable pool with regular payouts.
-      </div>
       <div class="col-md-3 stats">
-        <div><i class="fa fa-users"></i> Miners Online: <span id="poolHashrate">{{format-number stats.model.minersTotal}}</span></div>
-        <div><i class="fa fa-tachometer"></i> Pool Hash Rate: <span id="poolHashrate">{{format-hashrate stats.model.hashrate}}</span></div>
-        <div><i class="fa fa-money"></i> Pool Fee: <span id="poolFee" class="label label-success">{{config.PoolFee}}</span></div>
+        <div>{{t 'index.minersTotal'}}: <span id="poolHashrate">{{format-number stats.model.minersTotal}}</span></div>
+        <div>{{t 'index.poolHashrate'}}: <span id="poolHashrate">{{format-hashrate stats.model.hashrate}}</span></div>
         {{#if stats.model.stats.lastBlockFound}}
-        <div><i class="fa fa-clock-o"></i> Last Block Found: <span>{{format-relative (seconds-to-ms stats.model.stats.lastBlockFound)}}</span></div>
+          <div>{{t 'index.lastBlockFound'}}: <span>{{format-relative (seconds-to-ms stats.model.stats.lastBlockFound)}}</span></div>
         {{/if}}
       </div>
       <div class="col-md-4 stats">
-        <div><i class="fa fa-unlock-alt"></i> Network Difficulty: <span>{{with-metric-prefix stats.difficulty}}</span></div>
-        <div><i class="fa fa-tachometer"></i> Network Hash Rate: <span>{{format-hashrate stats.hashrate}}</span></div>
-        <div><i class="fa fa-bars"></i> Blockchain Height: <span>{{format-number stats.height}}</span></div>
-        <div><i class="fa fa-clock-o"></i> Current Round Variance: <span>{{format-number stats.roundVariance style='percent'}}</span></div>
+        <div>{{t 'index.difficulty'}}: <span>{{with-metric-prefix stats.difficulty}}</span></div>
+        <div>{{t 'index.hashrate'}}: <span>{{format-hashrate stats.hashrate}}</span></div>
+        <div>{{t 'index.height'}}: <span>{{format-number stats.height}}</span></div>
+        <div>{{t 'index.roundVariance'}}: <span>{{format-number stats.roundVariance style='percent'}}</span></div>
       </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="stats" style="margin: 40px auto;">
+    <h4 style="text-align: center">{{t 'index.lookupTitle'}}</h4>
+    <div class="input-group" style="max-width: 600px;margin: 10px auto;">
+      {{input value=cachedLogin class="form-control" placeholder=(t 'index.lookupPlaceholder')}}
+      <span class="input-group-btn">
+        <button class="btn btn-primary" type="button" {{action 'lookup' cachedLogin}}>
+          <span style="display: inline;"><i class="fa fa-search"></i> {{t 'index.lookup'}}</span>
+        </button>
+      </span>
     </div>
   </div>
 </div>
 
 <div class="container">
-  <div class="stats">
-    <h4>Your Stats &amp; Payment History</h4>
-    <div class="input-group">
-      {{input value=cachedLogin class="form-control" placeholder="Enter Your Ethereum Address"}}
-      <span class="input-group-btn">
-        <button class="btn btn-primary" type="button" {{action 'lookup' cachedLogin}}>
-          <span style="display: inline;"><i class="fa fa-search"></i> Lookup</span>
-        </button>
-      </span>
+  <div class="col-md-8">
+    {{format-html-message 'index.help' StratumPort=config.StratumPort}}
+  </div>
+  <div class="col-md-4">
+    <h2 style="font-size: 24px">
+      <strong>{{t 'index.featureTitle'}}</strong>
+    </h2>
+    <div>
+      <div>{{t 'index.feature01'}}</div>
+      <div>{{t 'index.feature02'}}</div>
+      <div>{{t 'index.feature03'}}</div>
+      <div>{{t 'index.feature04'}}</div>
+      <div>{{t 'index.feature05'}}</div>
+      <div>{{t 'index.feature06'}}</div>
+      <div>{{t 'index.feature07'}}</div>
+      <div>{{t 'index.feature08'}}</div>
+      <div>{{t 'index.feature09'}}</div>
+      <div>{{t 'index.feature10'}}</div>
+      <div>{{t 'index.feature11'}}</div>
+      <div>{{t 'index.feature12'}}</div>
+      <div>{{t 'index.feature13'}}</div>
     </div>
   </div>
-  <div>
-    <hr/>
-    <h4 class="note note-info text-center">
-      ethminer.exe -F {{config.HttpHost}}:{{config.HttpPort}}/&lt;address&gt;/&lt;worker&gt; -G
-    </h4>
-  </div>
 </div>
+
+<footer class="footer">
+  <div class="container">
+    <div style="float: right;margin-top: 20px;">
+      <a href="#" {{action 'changeLocale' 'en-US'}}>English</a> | <a href="#" {{action 'changeLocale' 'zh-CN'}}>中文</a>
+    </div>
+    <p class="text-muted">&copy; NewBlock · 2017</p>
+  </div>
+</footer>

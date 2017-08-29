@@ -1,5 +1,138 @@
-product:
-  info: '{product} will cost {price, number, USD} if ordered by {deadline, date, time}'
-  title: 'Hello world!'
-  html:
-    info: '<strong>{product}</strong> will cost <em>{price, number, USD}</em> if ordered by {deadline, date, time}'
+app:
+  home: 'Home'
+  help: 'Help'
+  blocks: 'Pool Blocks'
+  payments: 'Payments'
+  miners: 'Miners'
+  about: 'About'
+index:
+  title: 'New Block'
+  featureTitle: 'Why NewBlock ?'
+  lookupTitle: 'Your Stats & Payment History'
+  lookupPlaceholder: 'Enter Your Ethereum Address'
+  lookup: 'lookup'
+  minersTotal: 'Miners Online'
+  poolHashrate: 'Pool Hash Rate'
+  lastBlockFound: 'Last Block Found'
+  difficulty: 'Network Difficulty'
+  hashrate: 'Network Hash Rate'
+  height: 'Blockchain Height'
+  roundVariance: 'Current Round Variance'
+  feature01: 'Anonymous mining, no registration needed.'
+  feature02: 'both PROP/PPS mode are supported'
+  feature03: 'Accurate hashrate reporting'
+  feature04: 'We pay all Ethereum rewards, including Regular Blocks, Uncles & Fees'
+  feature05: 'Real time payout'
+  feature06: 'Min payout threshold: 0.1'
+  feature07: 'Global mining network with DDOS protected servers'
+  feature08: '24/7 availability via global failover servers'
+  feature09: 'Full stratum support (supports all ethereum miners)'
+  feature10: 'Efficient mining engine, low uncle rates'
+  feature11: 'Detailed global and per-worker statistics'
+  feature12: 'Email notification system, invalid shares warnings'
+  feature13: 'Only 1% pool fee'
+  help: "
+    <div class=\"page-header\">
+      <h1>How To Mine</h1>
+    </div>
+    <h4>Stratum Mining</h4>
+    <p>In order to mine on this pool, you can use most popular miner software, recommend you to use 
+      <a href=\"https://bitcointalk.org/index.php?topic=1433925.0\" rel=\"nofollow\" target=\"_blank\">claymore</a> to get better efficienty
+    </p>
+    <p>
+      <strong>Full example:</strong>
+      <pre>
+        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
+        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
+      </pre>
+    </p>
+    <dl class=\"dl-horizontal\">
+      <dt><b style=\"color:red;\">huabei.newblock.org:8008</b></dt>
+      <dd>
+        <p>NewBlock has many servers around the world, you can choose one from:</p>
+        <table class=\"table table-bordered table-condensed\">
+          <tr>
+            <td>china1</td><td>huabei.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>china2</td><td>huanan.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>HongKong</td><td>us.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>US</td><td>us.newblock.org:8008</td>
+          </tr>
+          <tr>
+            <td>Europe</td><td>eu.newblock.org:8008</td>
+          </tr>
+        </table>
+      </dd>
+    
+      <dt>YOUR_ETH_ADDRESS</dt>
+      <dd>This is your address for payouts, generate one with geth, or mine directly to exchange like
+        <a href=\"http://poloniex.com\" rel=\"nofollow\" target=\"_blank\">Poloniex</a>
+        or <a href=\"http://bittrex.com\" rel=\"nofollow\" target=\"_blank\">Bittrex</a>.<br/>
+        <strong>Example:</strong> <code>0x05a56E2D52c817161883f50c441c3228CFe54d9f</code>.
+      </dd>
+      <dt>RIG_ID</dt>
+      <dd>
+        ID of your farm to distinguish it from your other rig. If you have just one rig, feel free to omit this param.
+        This param must be short alphanumeric string with optional dashes and underscores.<br/>
+        <strong>Example:</strong> <code>rig-1</code>
+      </dd>
+    </dl>
+  "
+block:
+  title: 'Pool always pay full block reward including TX fees and uncle rewards.'  
+  description: "Block maturity requires <u>up to</u> </strong> <span class=\"label label-success\">520</span> <strong>blocks.
+      Usually it's less indeed."
+  blocks: 'Blocks'
+  immature: 'Immature'
+  new: 'New Block'
+  matured: 'Matured Blocks'
+  col1: 'Height'
+  col2: 'Block Hash'
+  col3: 'Time Found'
+  col4: 'Variance'
+  col5: 'Reward'
+  noMature: 'No matured blocks yet'
+  noImmature: 'No immature blocks yet'
+  noNew: 'No new blocks yet'
+payment:
+  title: "Pool always pay tx fees from it's own pocket for now."
+  totalCount: 'Total payments sent:'
+  col1: 'Time'
+  col2: 'Amount'
+  col3: 'Address'
+  col4: 'Tx ID'
+  noPayouts: 'No payouts yet'
+miner:
+  totalHashrate: 'Total hashrate: '
+  totalMiner: 'Total miners: '
+  miners: 'Miners'
+  col1: 'Login'
+  col2: 'Hashrate'
+  col3: 'Last Beat'
+  noMiner: 'No miners'
+account:
+  imBalance: 'Immature Balance:'
+  imBalanceDesc: 'Preliminary balance awaiting blocks to mature.'
+  pending: 'Pending Balance: '
+  pendingDesc: 'Credited coins awaiting payout.'
+  cur: 'Current Payment:'
+  total: 'Total Paid: '
+  lastShare: 'Last Share Submitted: '
+  workersOnline: 'Workers Online: '
+  workers: 'Workers'
+  payouts: 'Payouts'
+  hashrate30m: ' Hashrate (30m): '
+  hashrate3h: '  Hashrate (3h): '
+  found: ' Blocks Found: '
+  totalPyaments: ' Total Payments: '
+  round: ' Your Round Share: '
+  roundDesc: ' Percent of your contribution to current round.'
+  epoch: 'Epoch Switch:'
+
+
+
