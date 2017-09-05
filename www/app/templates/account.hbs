@@ -20,8 +20,7 @@
       </div>
       <div class="col-md-4 stats">
         {{#if model.stats.lastShare}}
-        <div style="display: block;"><i class="fa fa-clock-o"></i>
-          {{t 'account.lastShare'}}<span>{{format-relative (seconds-to-ms (string-to-int model.stats.lastShare))}}</span>
+        <div style="display: block;"><i class="fa fa-clock-o"></i>{{t 'account.lastShare'}}<span>{{format-relative (seconds-to-ms (string-to-int model.stats.lastShare))}}</span>
         </div>
         {{/if}}
         <div style="display: block;"><i class="fa fa-gears"></i>{{t 'account.workersOnline'}}<span>{{format-number model.workersOnline}}</span></div>

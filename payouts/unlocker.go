@@ -31,6 +31,8 @@ type UnlockerConfig struct {
 const minDepth = 16
 
 var constReward = math.MustParseBig256("5000000000000000000")
+// 4.9 * 0.96 = 4.704
+var avaReward   = new(big.Rat).SetFloat64(4.704e18)
 var uncleReward = new(big.Int).Div(constReward, new(big.Int).SetInt64(32))
 
 // Donate 10% from pool fees to developers
@@ -69,6 +71,7 @@ func (u *BlockUnlocker) Start() {
 	// Immediately unlock after start
 	u.unlockPendingBlocks()
 	u.unlockAndCreditMiners()
+	u.unlockPpsRewards()
 	timer.Reset(intv)
 
 	go func() {
@@ -77,6 +80,7 @@ func (u *BlockUnlocker) Start() {
 			case <-timer.C:
 				u.unlockPendingBlocks()
 				u.unlockAndCreditMiners()
+				u.unlockPpsRewards()
 				timer.Reset(intv)
 			}
 		}
@@ -424,6 +428,52 @@ func (u *BlockUnlocker) unlockAndCreditMiners() {
 		util.FormatRatReward(totalPoolProfit),
 	)
 }
+
+func (u *BlockUnlocker) unlockPpsRewards() {
+	if u.halt {
+		log.Println("Unlocking suspended due to last critical error:", u.lastFail)
+		return
+	}
+	reply, err := u.rpc.GetPendingBlock()
+	if err != nil {
+		log.Printf("Error while getting pending block on %s: %s", u.rpc.Name, err)
+		u.halt = true
+		u.lastFail = err
+		return
+	}
+	blockDiff, err := strconv.ParseInt(strings.Replace(reply.Difficulty, "0x", "", -1), 16, 64)
+	if err != nil {
+		log.Println("Error: Unlocker can't parse pending block difficulty")
+		u.halt = true
+		u.lastFail = err
+		return
+	}
+
+	shares, err := u.backend.GetPpsUnpaidShares()
+	if err != nil {
+		log.Println("Error: Can't GetPpsUnpaidShares")
+		u.halt = true
+		u.lastFail = err
+		return
+	}
+
+	rewards := make(map[string]int64)
+	for login, shareDiff := range shares {
+		ratio := new(big.Rat).SetFloat64(float64(shareDiff) / float64(blockDiff))
+		r := new(big.Rat).Mul(avaReward, ratio)
+		rewards[login] += weiToShannonInt64(r)
+	}
+
+	err = u.backend.WritePpsRewards(rewards, shares)
+	if err != nil {
+		u.halt = true
+		u.lastFail = err
+		log.Printf("Failed to WritePpsRewards: %v", err)
+		return
+	}
+}
+
+
 
 func (u *BlockUnlocker) calculateRewards(block *storage.BlockData) (*big.Rat, *big.Rat, *big.Rat, map[string]int64, error) {
 	revenue := new(big.Rat).SetInt(block.Reward)

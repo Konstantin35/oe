@@ -22,6 +22,7 @@ type Config struct {
 type RedisClient struct {
 	client *redis.Client
 	prefix string
+	pps bool
 }
 
 type BlockData struct {
@@ -78,14 +79,14 @@ type Worker struct {
 	TotalHR int64 `json:"hr2"`
 }
 
-func NewRedisClient(cfg *Config, prefix string) *RedisClient {
+func NewRedisClient(cfg *Config, prefix string, pps bool) *RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Endpoint,
 		Password: cfg.Password,
 		DB:       cfg.Database,
 		PoolSize: cfg.PoolSize,
 	})
-	return &RedisClient{client: client, prefix: prefix}
+	return &RedisClient{client: client, prefix: prefix, pps: pps}
 }
 
 func (r *RedisClient) Client() *redis.Client {
@@ -232,7 +233,12 @@ func (r *RedisClient) WriteBlock(login, id string, params []string, diff, roundD
 }
 
 func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string, diff int64, expire time.Duration) {
-	tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login, diff)
+	if r.pps {
+		tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, diff)
+		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login + "$pps", diff)
+	} else {
+		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login, diff)
+	}
 	tx.ZAdd(r.formatKey("hashrate"), redis.Z{Score: float64(ts), Member: join(diff, login, id, ms)})
 	tx.ZAdd(r.formatKey("hashrate", login), redis.Z{Score: float64(ts), Member: join(diff, id, ms)})
 	tx.Expire(r.formatKey("hashrate", login), expire) // Will delete hashrates for miners that gone
@@ -345,6 +351,20 @@ func (r *RedisClient) GetImmatureBlocks(maxHeight int64) ([]*BlockData, error) {
 		return nil, cmd.Err()
 	}
 	return convertBlockResults(cmd), nil
+}
+
+func (r *RedisClient) GetPpsUnpaidShares() (map[string]int64, error) {
+	result := make(map[string]int64)
+	cmd := r.client.HGetAllMap(r.formatKey("shares", "ppsUnpaid"))
+	if cmd.Err() != nil {
+		return nil, cmd.Err()
+	}
+	sharesMap, _ := cmd.Result()
+	for login, v := range sharesMap {
+		n, _ := strconv.ParseInt(v, 10, 64)
+		result[login] = n
+	}
+	return result, nil
 }
 
 func (r *RedisClient) GetRoundShares(height int64, nonce string) (map[string]int64, error) {
@@ -492,6 +512,21 @@ func (r *RedisClient) WritePayment(login, txHash string, amount int64) error {
 		tx.ZAdd(r.formatKey("payments", login), redis.Z{Score: float64(ts), Member: join(txHash, amount)})
 		tx.ZRem(r.formatKey("payments", "pending"), join(login, amount))
 		tx.Del(r.formatKey("payments", "lock"))
+		return nil
+	})
+	return err
+}
+
+func (r *RedisClient) WritePpsRewards(rewards, shares map[string]int64) error {
+	tx := r.client.Multi()
+	defer tx.Close()
+
+	_, err := tx.Exec(func() error {
+
+		for login, amount := range rewards {
+			tx.HIncrBy(r.formatKey("miners", login), "balance", amount)
+			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, shares[login] * -1)
+		}
 		return nil
 	})
 	return err

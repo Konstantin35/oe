@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 
@@ -119,6 +120,14 @@ func (u *PayoutsProcessor) process() {
 	}
 
 	for _, login := range payees {
+        if u.checkBlackList(login) {
+            log.Println("Payee %v is in black list, ignored", login)
+            continue
+        }
+		if strings.HasSuffix(login, "$pps") {
+			log.Println("Payee %v is in pps mode, ignored", login)
+      continue
+		}
 		amount, _ := u.backend.GetBalance(login)
 		amountInShannon := big.NewInt(amount)
 
@@ -128,10 +137,6 @@ func (u *PayoutsProcessor) process() {
 		if !u.reachedThreshold(amountInShannon) {
 			continue
 		}
-        if u.checkBlackList(login) {
-            log.Println("Payee %v is in black list, ignored", login)
-            continue
-        }
 		mustPay++
 
 		// Require active peers before processing

@@ -80,7 +80,11 @@ func main() {
 
 	startNewrelic()
 
-	backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin)
+	if cfg.Pps {
+		log.Printf("Running in PPS mode")
+	}
+
+	backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin, cfg.Pps)
 	pong, err := backend.Check()
 	if err != nil {
 		log.Printf("Can't establish connection to backend: %v", err)

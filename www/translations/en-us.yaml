@@ -127,7 +127,7 @@ account:
   workers: 'Workers'
   payouts: 'Payouts'
   hashrate30m: ' Hashrate (30m): '
-  hashrate3h: '  Hashrate (3h): '
+  hashrate3h: '  Hashrate (24h): '
   found: ' Blocks Found: '
   totalPyaments: ' Total Payments: '
   round: ' Your Round Share: '
