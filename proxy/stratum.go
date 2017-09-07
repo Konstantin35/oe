@@ -502,8 +502,8 @@ func(cs *Session) sendJobOfficial(s *ProxyServer, id *json.RawMessage) error {
 		Method:"mining.notify",
 		Params: []interface{}{
 			cs.JobDeatils.JobID,
-			cs.JobDeatils.SeedHash,
 			cs.JobDeatils.HeaderHash,
+			cs.JobDeatils.SeedHash,
 			util.GetTargetHex(s.config.Proxy.Difficulty),
 		},
 	}
