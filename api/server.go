@@ -285,6 +285,7 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 			stats[key] = value
 		}
 		stats["pageSize"] = s.config.Payments
+		
 		reply = &Entry{stats: stats, updatedAt: now}
 		s.miners[login] = reply
 	}

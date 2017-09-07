@@ -4,6 +4,10 @@
     <div class="row">
       <div class="col-md-4 stats">
         <div style="display: block;">
+          <i class="fa fa-cloud"></i> {{t 'account.unpaidShares'}} <span>{{model.stats.unpaidShares}}</span><br>
+          <small>{{t 'account.unpaidSharesDesc'}} {{format-balance estEarning}}</small>
+        </div>
+        <div style="display: block;">
           <i class="fa fa-cloud"></i> {{t 'account.imBalance'}} <span>{{format-balance model.stats.immature}}</span><br>
           <small>{{t 'account.imBalanceDesc'}} </small>
         </div>

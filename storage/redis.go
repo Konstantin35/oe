@@ -668,6 +668,7 @@ func (r *RedisClient) GetMinerStats(login string, maxPayments int64) (map[string
 		tx.ZRevRangeWithScores(r.formatKey("payments", login), 0, maxPayments-1)
 		tx.ZCard(r.formatKey("payments", login))
 		tx.HGet(r.formatKey("shares", "roundCurrent"), login)
+		tx.HGet(r.formatKey("shares", "ppsUnpaid"), login)
 		return nil
 	})
 
@@ -680,7 +681,9 @@ func (r *RedisClient) GetMinerStats(login string, maxPayments int64) (map[string
 		stats["payments"] = payments
 		stats["paymentsTotal"] = cmds[2].(*redis.IntCmd).Val()
 		roundShares, _ := cmds[3].(*redis.StringCmd).Int64()
+		unpaidShares, _ := cmds[4].(*redis.StringCmd).Int64()
 		stats["roundShares"] = roundShares
+		stats["unpaidShares"] = unpaidShares
 	}
 
 	return stats, nil

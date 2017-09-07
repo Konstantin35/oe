@@ -116,6 +116,8 @@ miner:
   col3: 'Last Beat'
   noMiner: 'No miners'
 account:
+  unpaidShares: 'unpaid pps shares'
+  unpaidSharesDesc: 'Estimated Reward:'
   imBalance: 'Immature Balance:'
   imBalanceDesc: 'Preliminary balance awaiting blocks to mature.'
   pending: 'Pending Balance: '

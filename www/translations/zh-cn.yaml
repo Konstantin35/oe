@@ -115,6 +115,8 @@ miner:
   col3: '上次提交'
   noMiner: '暂无矿工'
 account:
+  unpaidShares: 'PPS 贡献：'
+  unpaidSharesDesc: '预计收益：'
   imBalance: '未成熟余额：'
   imBalanceDesc: '等待区块成熟的金额'
   pending: '待支付余额：'
