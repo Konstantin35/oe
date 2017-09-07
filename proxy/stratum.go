@@ -120,7 +120,6 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 	// Handle RPC methods
 	switch req.Method {
 	case "mining.subscribe":
-        cs.protocolType = "stratum_nicehash"
 		var params []string
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
@@ -128,59 +127,97 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 			return err
 		}
 
-        if params[1] != "EthereumStratum/1.0.0"{
-            log.Println("Unsupported stratum version from ", cs.ip)
-            return cs.sendTCPNHError(req.Id, []interface{}{
-                -1,
-                "unsupported ethereum version",
-                nil,
-            })
-        }
-        t := s.currentBlockTemplate()
-        jobID := generateRandomString(8)
-        extranonce := generateRandomString(4)
-        cs.JobDeatils = jobDetails{
-            JobID: jobID,
-            Extranonce: extranonce,
-            SeedHash: removeHexPrefix(t.Seed),
-            HeaderHash: removeHexPrefix(t.Header),
-        }
+		if len(params) == 0 {
+			cs.protocolType = "stratum_official"
 
-        result := []interface{}{
-            []string{
-                "mining.notify",
-                jobID,
-                "EthereumStratum/1.0.0",
-            },
-            extranonce,
-        }
+			t := s.currentBlockTemplate()
+			jobID := generateRandomString(8)
+			extranonce := generateRandomString(4)
+			cs.JobDeatils = jobDetails{
+				JobID: jobID,
+				Extranonce: extranonce,
+				SeedHash: removeHexPrefix(t.Seed),
+				HeaderHash: removeHexPrefix(t.Header),
+			}
 
-        resp := JSONRpcResp{
-            Id:req.Id,
-            Version:"EthereumStratum/1.0.0",
-            Result:result,
-            Error: nil,
-        }
-        return cs.sendTCPNHResult(resp)
+			result := []interface{}{
+				[]string{
+					"mining.notify",
+					jobID,
+				},
+				extranonce,
+				2,
+			}
+
+			resp := JSONRpcResp{
+				Id:req.Id,
+				Version:"EthereumStratum/1.0.0",
+				Result:result,
+				Error: nil,
+			}
+
+			return cs.sendTCPNHResult(resp)
+
+		} else {
+			cs.protocolType = "stratum_nicehash"
+
+			if len(params) < 2 || params[1] != "EthereumStratum/1.0.0"{
+				log.Println("Unsupported stratum version from ", cs.ip)
+				return cs.sendTCPNHError(req.Id, []interface{}{
+					-1,
+					"unsupported ethereum version",
+					nil,
+				})
+			}
+
+			t := s.currentBlockTemplate()
+			jobID := generateRandomString(8)
+			extranonce := generateRandomString(4)
+			cs.JobDeatils = jobDetails{
+				JobID: jobID,
+				Extranonce: extranonce,
+				SeedHash: removeHexPrefix(t.Seed),
+				HeaderHash: removeHexPrefix(t.Header),
+			}
+
+			result := []interface{}{
+				[]string{
+					"mining.notify",
+					jobID,
+					"EthereumStratum/1.0.0",
+				},
+				extranonce,
+			}
+
+			resp := JSONRpcResp{
+				Id:req.Id,
+				Version:"EthereumStratum/1.0.0",
+				Result:result,
+				Error: nil,
+			}
+			return cs.sendTCPNHResult(resp)
+		}
 
 	case "mining.authorize":
-        cs.protocolType = "stratum_nicehash"
 		var params []string
 		err := json.Unmarshal(*req.Params, &params)
-		if err != nil {
+		if err != nil || len(params) < 1 {
 			return errors.New("invalid params")
 		}
 		splitData := strings.Split(params[0], ".")
+		if len(splitData) > 1 {
+			req.Worker = splitData[1]
+		}
 		params[0] = addHexPrefix(splitData[0])
 
 		reply , errReply := s.handleLoginRPC(cs, params, req.Worker)
 		if errReply != nil {
-      log.Println("handleLoginRPC error: ", errReply)
-            return cs.sendTCPNHError(req.Id, []interface{}{
-                errReply.Code,
-                errReply.Message,
-                nil,
-            })
+			log.Println("handleLoginRPC error: ", errReply)
+			return cs.sendTCPNHError(req.Id, []interface{}{
+				errReply.Code,
+				errReply.Message,
+				nil,
+			})
 		}
 
 		resp := JSONRpcResp{Id:req.Id, Result:reply, Error:nil}
@@ -196,55 +233,85 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 			return err
 		}
 
-		return cs.sendJob(s, req.Id)
+		if cs.protocolType == "stratum_official" {
+			return cs.sendJobOfficial(s, req.Id)
+		} else {
+			return cs.sendJob(s, req.Id)
+		}
+
 	case "mining.submit":
-        cs.protocolType = "stratum_nicehash"
 		var params []string
 		if err := json.Unmarshal(*req.Params, &params); err != nil{
 			return err
 		}
 
+		if len(params) < 3 {
+			log.Println("invalid params from ", cs.ip)
+			return cs.sendTCPNHError(req.Id, []interface{}{
+				-1,
+				"invalid params",
+				nil,
+			})
+		}
+
 		splitData := strings.Split(params[0], ".")
 		id := splitData[0]
-        if id[:2] != "0x" {
-            id = "0x" + id
-        }
+
+		if id[:2] != "0x" {
+			id = "0x" + id
+		}
 
 		if cs.JobDeatils.JobID != params[1] {
-            var errorArray []interface{}
-            errorArray = append(errorArray, -1)
-            errorArray = append(errorArray, "wrong job id")
-            errorArray = append(errorArray, nil)
+			var errorArray []interface{}
+			errorArray = append(errorArray, -1)
+			errorArray = append(errorArray, "wrong job id")
+			errorArray = append(errorArray, nil)
 			return cs.sendTCPNHError(req.Id, errorArray)
 		}
-		nonce := cs.JobDeatils.Extranonce + params[2]
 
-        if nonce[:2] != "0x" {
-            nonce = "0x" + nonce
-        }
+		var nonce string
+		if cs.protocolType == "stratum_official" {
+			nonce = params[2]
+			if nonce[:2] == "0x" {
+				nonce = nonce[2:]
+			}
+			if nonce[:len(cs.JobDeatils.Extranonce)] != cs.JobDeatils.Extranonce {
+				var errorArray []interface{}
+				errorArray = append(errorArray, -1)
+				errorArray = append(errorArray, "wrong extranonce")
+				errorArray = append(errorArray, nil)
+				return cs.sendTCPNHError(req.Id, errorArray)
+			}
+		} else {
+			nonce = cs.JobDeatils.Extranonce + params[2]
+		}
 
-        seedHash := cs.JobDeatils.SeedHash
-        if seedHash[:2] != "0x" {
-            seedHash = "0x" + seedHash
-        }
+		if nonce[:2] != "0x" {
+			nonce = "0x" + nonce
+		}
 
-        headerHash := cs.JobDeatils.HeaderHash
-        if headerHash[:2] != "0x" {
-            headerHash = "0x" + headerHash
-        }
+		seedHash := cs.JobDeatils.SeedHash
+		if seedHash[:2] != "0x" {
+			seedHash = "0x" + seedHash
+		}
+
+		headerHash := cs.JobDeatils.HeaderHash
+		if headerHash[:2] != "0x" {
+			headerHash = "0x" + headerHash
+		}
 
 		params = []string{
 			nonce,
-            headerHash,
-            "",
+			headerHash,
+			"",
 		}
 
 		reply, errReply := s.handleTCPSubmitRPC(cs, id, params)
 		if errReply != nil {
-            var errorArray []interface{}
-            errorArray = append(errorArray, errReply.Code)
-            errorArray = append(errorArray, errReply.Message)
-            errorArray = append(errorArray, nil)
+			var errorArray []interface{}
+			errorArray = append(errorArray, errReply.Code)
+			errorArray = append(errorArray, errReply.Message)
+			errorArray = append(errorArray, nil)
 			return cs.sendTCPNHError(req.Id, errorArray)
 		}
 		resp := JSONRpcResp{
@@ -256,7 +323,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 			return err
 		}
 
-		return cs.sendJob(s, req.Id)
+		if cs.protocolType == "stratum_official" {
+			return cs.sendJobOfficial(s, req.Id)
+		} else {
+			return cs.sendJob(s, req.Id)
+		}
 
     case "mining.extranonce.subscribe":
         cs.protocolType = "stratum_nicehash"
@@ -426,6 +497,20 @@ func(cs *Session) sendTCPNHReq(resp JSONRpcReqNH)  error {
     return cs.enc.Encode(&resp)
 }
 
+func(cs *Session) sendJobOfficial(s *ProxyServer, id *json.RawMessage) error {
+	resp := JSONRpcReqNH{
+		Method:"mining.notify",
+		Params: []interface{}{
+			cs.JobDeatils.JobID,
+			cs.JobDeatils.SeedHash,
+			cs.JobDeatils.HeaderHash,
+			util.GetTargetHex(s.config.Proxy.Difficulty),
+		},
+	}
+
+	return cs.sendTCPNHReq(resp)
+}
+
 func(cs *Session) sendJob(s *ProxyServer, id *json.RawMessage) error {
 	resp := JSONRpcReqNH{
 		Method:"mining.notify",
@@ -504,6 +589,76 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 					cs.JobDeatils.SeedHash,
 					cs.JobDeatils.HeaderHash,
 					true,
+				},
+			}
+
+			err := cs.sendTCPNHReq(resp)
+			<-bcast
+			if err != nil {
+				log.Printf("Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
+				s.removeSession(cs)
+			} else {
+				s.setDeadline(cs.conn)
+			}
+		}(m)
+	}
+	log.Printf("Nice hash jobs broadcast finished %s", time.Since(start))
+}
+
+func (s *ProxyServer) broadcastNewJobsOfficial() {
+	t := s.currentBlockTemplate()
+	if t == nil || len(t.Header) == 0 || s.isSick() {
+		return
+	}
+
+	s.sessionsMu.RLock()
+	defer s.sessionsMu.RUnlock()
+
+    count := 0
+	for m, _ := range s.sessions {
+        if m.protocolType == "stratum_official" {
+            count++
+        }
+	}
+	log.Printf("Broadcasting new nice hash job to %v stratum official miners", count)
+
+	start := time.Now()
+	bcast := make(chan int, 1024)
+	n := 0
+
+	for m, _ := range s.sessions {
+        if m.protocolType != "stratum_official" {
+            continue
+        }
+		n++
+		bcast <- n
+
+        seedHash := t.Seed
+        headerHash := t.Header
+        if seedHash[:2] == "0x" {
+            seedHash = seedHash[2:]
+        }
+        if headerHash[:2] == "0x" {
+            headerHash = headerHash[2:]
+        }
+
+		go func(cs *Session) {
+            job := jobDetails{
+				JobID: generateRandomString(8),
+				SeedHash: seedHash,
+				HeaderHash: headerHash,
+                Extranonce: cs.JobDeatils.Extranonce,
+            }
+
+			cs.JobDeatils = job
+
+			resp := JSONRpcReqNH{
+				Method:"mining.notify",
+				Params: []interface{}{
+					cs.JobDeatils.JobID,
+					cs.JobDeatils.SeedHash,
+					cs.JobDeatils.HeaderHash,
+					util.GetTargetHex(s.config.Proxy.Difficulty),
 				},
 			}
 
