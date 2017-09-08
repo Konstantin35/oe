@@ -16,7 +16,7 @@ export default Ember.Route.extend({
   beforeModel() {
     if (!this._inited) {
       this.get('intl').setLocale(getLocale() || 'en-US');
-      this._inited = true
+      this._inited = true;
     }
   },
 

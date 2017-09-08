@@ -6,7 +6,7 @@ export default Ember.Controller.extend({
   nodes: Ember.computed.reads('applicationController'),
   estEarning: Ember.computed('stats', 'model', {
     get() {
-      return 4.704 * this.get('model.unpaidShares') / this.get('nodes.difficulty');
+      return (4.704 * this.get('model.unpaidShares') / (+this.get('nodes.difficulty'))).toFixed(8);
     }
   }),
   roundPercent: Ember.computed('stats', 'model', {
