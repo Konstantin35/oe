@@ -42,8 +42,8 @@ index:
     <p>
       <strong>完整实例:</strong>
       <pre>
-        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
-        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
+        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ETC_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
+        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ETC_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
       </pre>
     </p>
     <dl class=\"dl-horizontal\">
@@ -52,19 +52,22 @@ index:
         <p>NewBlock 在全世界有多个节点，你可以选择离你的矿机最近的节点：</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
-            <td>华北</td><td>huabei.newblock.org:8008</td>
+            <th class=\"info\" colspan=\"2\">ETC</th> 
           </tr>
           <tr>
-            <td>华南</td><td>huanan.newblock.org:8008</td>
+            <td>ETH 华北</td><td>huabei.newblock.org:8008</td>
           </tr>
           <tr>
-            <td>香港</td><td>us.newblock.org:8008</td>
+            <td>ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
           </tr>
           <tr>
-            <td>美国</td><td>us.newblock.org:8008</td>
+            <th class=\"success\" colspan=\"2\">ETC</th>
           </tr>
           <tr>
-            <td>欧洲</td><td>eu.newblock.org:8008</td>
+            <td>ETC 华北</td><td>huabei.newblock.org:8009</td>
+          </tr>
+          <tr>
+            <td>ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
           </tr>
         </table>
       </dd>

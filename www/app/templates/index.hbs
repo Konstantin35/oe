@@ -1,6 +1,10 @@
 <div class="jumbotron">
   <div class="container">
     <div class="row">
+      <div class="col-md-2" style="text-align: center;">
+        {{!-- <img src="/eth.png" alt="" style="width: 100px;height:100px" > --}}
+        <img src="/etc.png" alt="" style="width: 100px;height:100px;" >
+      </div>
       <div class="col-md-3 stats">
         <div>{{t 'index.minersTotal'}}: <span id="poolHashrate">{{format-number stats.model.minersTotal}}</span></div>
         <div>{{t 'index.poolHashrate'}}: <span id="poolHashrate">{{format-hashrate stats.model.hashrate}}</span></div>
@@ -20,7 +24,7 @@
 <div class="container">
   <div class="stats" style="margin: 40px auto;">
     <h4 style="text-align: center">{{t 'index.lookupTitle'}}</h4>
-    <div class="input-group" style="max-width: 600px;margin: 10px auto;">
+    <div class="input-group input-group-lg" style="max-width: 600px;margin: 10px auto;">
       {{input value=cachedLogin class="form-control" placeholder=(t 'index.lookupPlaceholder')}}
       <span class="input-group-btn">
         <button class="btn btn-primary" type="button" {{action 'lookup' cachedLogin}}>
