@@ -285,7 +285,15 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 			stats[key] = value
 		}
 		stats["pageSize"] = s.config.Payments
-		
+
+		shareRatio := s.backend.GetShareRatio(login)
+		if len(shareRatio) == 4 {
+			stats["acceptedShare"] = shareRatio[0]
+			stats["staleShare"] = shareRatio[1]
+			stats["duplicateShare"] = shareRatio[2]
+			stats["invalidShare"] = shareRatio[3]
+		}
+
 		reply = &Entry{stats: stats, updatedAt: now}
 		s.miners[login] = reply
 	}
