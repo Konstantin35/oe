@@ -15,7 +15,7 @@ module.exports = function(environment) {
 
     APP: {
       // API host and port
-      ApiUrl: 'http://shengupiao.com:8091/',
+      ApiUrl: 'http://shengupiao.com:8090/',
 
       // HTTP mining endpoint
       HttpHost: 'http://shengupiao.com',
@@ -39,7 +39,7 @@ module.exports = function(environment) {
       frontend markup and css theme on your workstation.
     */
     // ENV.APP.ApiUrl = 'http://localhost:8080/'
-    ENV.APP.ApiUrl = 'http://123.56.89.3:8080/'
+    // ENV.APP.ApiUrl = 'http://123.56.89.3:8080/'
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
     // ENV.APP.LOG_TRANSITIONS = true;

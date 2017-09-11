@@ -30,6 +30,11 @@
         <div style="display: block;"><i class="fa fa-gears"></i>{{t 'account.workersOnline'}}<span>{{format-number model.workersOnline}}</span></div>
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.hashrate30m'}}<span>{{format-hashrate model.currentHashrate}}</span></div>
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.hashrate3h'}}<span>{{format-hashrate model.hashrate}}</span></div>
+        <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.shareStat'}}<span>
+          <span title="accepted">{{model.acceptedShare}}</span> |
+          <span title="stale">{{model.staleShare}}</span> |
+          <span title="duplicate">{{model.duplicateShare}}</span> |
+          <span title="invalid">{{model.invalidShare}}</span></span></div>
       </div>
       <div class="col-md-4 stats">
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.found'}}<span>{{format-number model.stats.blocksFound fallback='0'}}</span></div>

@@ -130,6 +130,7 @@ account:
   payouts: 'Payouts'
   hashrate30m: ' Hashrate (30m): '
   hashrate3h: '  Hashrate (24h): '
+  shareStat: 'Share (last 1h)：'
   found: ' Blocks Found: '
   totalPyaments: ' Total Payments: '
   round: ' Your Round Share: '

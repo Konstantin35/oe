@@ -132,6 +132,7 @@ account:
   payouts: '支付'
   hashrate30m: '算力 (30m)：'
   hashrate3h: '算力 (24h)：'
+  shareStat: 'Share (last 1h)：'
   found: '发现区块： '
   totalPyaments: '支付笔数：'
   round: '本轮贡献：'
