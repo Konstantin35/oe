@@ -52,19 +52,22 @@ index:
         <p>NewBlock has many servers around the world, you can choose one from:</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
-            <td>china1</td><td>huabei.newblock.org:8008</td>
+            <th class=\"info\" colspan=\"2\">ETH</th> 
           </tr>
           <tr>
-            <td>china2</td><td>huanan.newblock.org:8008</td>
+            <td>ETH 华北 PPLNS</td><td>huabei.newblock.org:8008</td>
           </tr>
           <tr>
-            <td>HongKong</td><td>us.newblock.org:8008</td>
+            <td>ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
           </tr>
           <tr>
-            <td>US</td><td>us.newblock.org:8008</td>
+            <th class=\"success\" colspan=\"2\">ETC</th>
           </tr>
           <tr>
-            <td>Europe</td><td>eu.newblock.org:8008</td>
+            <td>ETC 华北 PPLNS</td><td>huabei.newblock.org:8009</td>
+          </tr>
+          <tr>
+            <td>ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
           </tr>
         </table>
       </dd>
@@ -116,6 +119,8 @@ miner:
   col3: 'Last Beat'
   noMiner: 'No miners'
 account:
+  propShare: 'prop share'
+  propShareDesc: 'ratio that you contribute in current round'
   unpaidShares: 'unpaid pps shares'
   unpaidSharesDesc: 'Estimated Reward:'
   imBalance: 'Immature Balance:'

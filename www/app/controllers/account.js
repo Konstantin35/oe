@@ -9,6 +9,20 @@ export default Ember.Controller.extend({
       return (4.704 * this.get('model.unpaidShares') / (+this.get('nodes.difficulty'))).toFixed(8);
     }
   }),
+  unpaidShareCount: Ember.computed('stats', 'model', {
+    get() {
+      return this.get('model.unpaidShares') / 5000000000;
+    }
+  }),
+  propPercent: Ember.computed('stats', 'model', {
+    get() {
+      var percent = this.get('model.roundShares') / this.get('stats.roundShares');
+      if (!percent) {
+        return 0;
+      }
+      return percent;
+    }
+  }),
   roundPercent: Ember.computed('stats', 'model', {
     get() {
       var percent = this.get('model.roundShares') / this.get('stats.roundShares');

@@ -4,8 +4,12 @@
     <div class="row">
       <div class="col-md-4 stats">
         <div style="display: block;">
-          <i class="fa fa-cloud"></i> {{t 'account.unpaidShares'}} <span>{{model.unpaidShares}}</span><br>
+          <i class="fa fa-gears"></i> {{t 'account.unpaidShares'}} <span>{{unpaidShareCount}}</span><br>
           <small>{{t 'account.unpaidSharesDesc'}} {{estEarning}}</small>
+        </div>
+        <div style="display: block;">
+          <i class="fa fa-gears"></i>{{t 'account.propShare'}}<span>{{format-number propPercent style='percent' maximumFractionDigits='6'}}</span><br/>
+          <small>{{t 'account.propShareDesc'}}</small>
         </div>
         <div style="display: block;">
           <i class="fa fa-cloud"></i> {{t 'account.imBalance'}} <span>{{format-balance model.stats.immature}}</span><br>
@@ -39,10 +43,6 @@
       <div class="col-md-4 stats">
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.found'}}<span>{{format-number model.stats.blocksFound fallback='0'}}</span></div>
         <div style="display: block;"><i class="fa fa-paper-plane-o"></i>{{t 'account.totalPyaments'}}<span>{{format-number model.paymentsTotal}}</span></div>
-        <div style="display: block;">
-          <i class="fa fa-gears"></i>{{t 'account.round'}}<span>{{format-number roundPercent style='percent' maximumFractionDigits='6'}}</span><br/>
-          <small>{{t 'account.roundDesc'}}</small>
-        </div>
         <div style="display: block;">
           <i class="fa fa-clock-o"></i>
           {{t 'account.epoch'}} <span>{{format-relative applicationController.nextEpoch units="hour"}}</span>

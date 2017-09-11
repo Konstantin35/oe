@@ -52,10 +52,10 @@ index:
         <p>NewBlock 在全世界有多个节点，你可以选择离你的矿机最近的节点：</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
-            <th class=\"info\" colspan=\"2\">ETC</th> 
+            <th class=\"info\" colspan=\"2\">ETH</th> 
           </tr>
           <tr>
-            <td>ETH 华北</td><td>huabei.newblock.org:8008</td>
+            <td>ETH 华北 PPLNS</td><td>huabei.newblock.org:8008</td>
           </tr>
           <tr>
             <td>ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
@@ -64,7 +64,7 @@ index:
             <th class=\"success\" colspan=\"2\">ETC</th>
           </tr>
           <tr>
-            <td>ETC 华北</td><td>huabei.newblock.org:8009</td>
+            <td>ETC 华北 PPLNS</td><td>huabei.newblock.org:8009</td>
           </tr>
           <tr>
             <td>ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
@@ -118,6 +118,8 @@ miner:
   col3: '上次提交'
   noMiner: '暂无矿工'
 account:
+  propShare: 'PPLNS 贡献：'
+  propShareDesc: '相比于其他矿工，你在本轮的贡献占比'
   unpaidShares: 'PPS 贡献：'
   unpaidSharesDesc: '预计收益：'
   imBalance: '未成熟余额：'
