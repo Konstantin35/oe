@@ -19,7 +19,7 @@ index:
   height: '区块高度'
   roundVariance: '本轮难度'
   feature01: '匿名挖矿，无须注册'
-  feature02: '同时支持 PROP/PPS 两种挖矿方式'
+  feature02: '同时支持 PPLNS & PPS 两种挖矿方式'
   feature03: '高效挖矿引擎，低叔块率'
   feature04: '区块、叔块奖励和交易费全部返还给矿工'
   feature05: '实时支付'
