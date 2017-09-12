@@ -330,7 +330,6 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 
     case "mining.extranonce.subscribe":
-        cs.protocolType = "stratum_nicehash"
 		var params []string
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
