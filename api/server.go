@@ -294,6 +294,11 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 			stats["invalidShare"] = shareRatio[3]
 		}
 
+		shareChart, err := s.backend.GetShareChart(login)
+		if err == nil {
+			stats["shareChart"] = shareChart
+		}
+
 		reply = &Entry{stats: stats, updatedAt: now}
 		s.miners[login] = reply
 	}

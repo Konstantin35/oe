@@ -46,6 +46,11 @@ type BlockData struct {
 	immatureKey    string
 }
 
+type ShareChartElement struct {
+	Time			int64 `json:"time"`
+	ShareNum		int64 `json:"shareNum"`
+}
+
 func (b *BlockData) RewardInShannon() int64 {
 	reward := new(big.Int).Div(b.Reward, util.Shannon)
 	return reward.Int64()
@@ -252,6 +257,14 @@ func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string
 func (r *RedisClient) WriteAcceptedShare(login string, share string) error {
 	r.client.ZRemRangeByScore(r.formatKey("acceptedShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
     _, err := r.client.ZAdd(r.formatKey("acceptedShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	if err != nil {
+		return err
+	}
+
+	t := time.Now()
+	rounded := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), 0, 0, 0, t.Location()).Unix()
+	r.client.ZRemRangeByScore(r.formatKey("shareNum", login), "-inf", strconv.FormatInt(time.Now().AddDate(0, 0, -1).Unix(), 10))
+    _, err = r.client.ZAdd(r.formatKey("shareNum", login), redis.Z{Score: float64(rounded), Member: share}).Result()
 	return err
 }
 
@@ -297,6 +310,29 @@ func (r *RedisClient) GetShareRatio(login string) [4]int {
         invalid = 0
     }
     return [4]int{int(accepted), int(stale), int(duplicate), int(invalid)}
+}
+
+func (r *RedisClient) GetShareChart(login string) ([]*ShareChartElement, error) {
+	key := r.formatKey("shareNum", login)
+	r.client.ZRemRangeByScore(key, "-inf", strconv.FormatInt(time.Now().AddDate(0, 0, -1).Unix(), 10))
+	rows, err := r.client.ZRangeByScoreWithScores(key, redis.ZRangeByScore{
+		Min: "-inf",
+		Max: "+inf",
+	}).Result()
+
+	if err != nil {
+		return nil, err
+	}
+	var result []*ShareChartElement
+	for _, row := range rows {
+		t := int64(row.Score)
+		if len(result) == 0 || result[len(result) - 1].Time != t {
+			result = append(result, &ShareChartElement{Time: t, ShareNum: 1})
+		} else {
+			result[len(result) - 1].ShareNum += 1
+		}
+	}
+	return result, nil
 }
 
 func (r *RedisClient) formatKey(args ...interface{}) string {
