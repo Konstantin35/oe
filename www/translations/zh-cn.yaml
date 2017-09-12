@@ -123,7 +123,7 @@ account:
   unpaidShares: 'PPS 贡献：'
   unpaidSharesDesc: '预计收益：'
   imBalance: '未成熟余额：'
-  imBalanceDesc: '等待区块成熟的金额'
+  imBalanceDesc: '等待区块成熟的金额（仅 PPLNS）'
   pending: '待支付余额：'
   pendingDesc: '已经成熟，等待支付'
   cur: '正在支付：'

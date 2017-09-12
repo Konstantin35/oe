@@ -467,7 +467,7 @@ func (s *ProxyServer) broadcastNewJobs() {
 			err := cs.pushNewJob(&reply)
 			<-bcast
 			if err != nil {
-				log.Printf("Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
+				log.Printf("broadcastNewJobs: Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
 				s.removeSession(cs)
 			} else {
 				s.setDeadline(cs.conn)
@@ -594,7 +594,7 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 			err := cs.sendTCPNHReq(resp)
 			<-bcast
 			if err != nil {
-				log.Printf("Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
+				log.Printf("broadcastNewJobsNH: Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
 				s.removeSession(cs)
 			} else {
 				s.setDeadline(cs.conn)
@@ -664,7 +664,7 @@ func (s *ProxyServer) broadcastNewJobsOfficial() {
 			err := cs.sendTCPNHReq(resp)
 			<-bcast
 			if err != nil {
-				log.Printf("Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
+				log.Printf("broadcastNewJobsOfficial: Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
 				s.removeSession(cs)
 			} else {
 				s.setDeadline(cs.conn)

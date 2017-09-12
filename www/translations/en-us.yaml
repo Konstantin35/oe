@@ -124,7 +124,7 @@ account:
   unpaidShares: 'unpaid pps shares'
   unpaidSharesDesc: 'Estimated Reward:'
   imBalance: 'Immature Balance:'
-  imBalanceDesc: 'Preliminary balance awaiting blocks to mature.'
+  imBalanceDesc: 'Preliminary balance awaiting blocks to mature. (PPLNS only)'
   pending: 'Pending Balance: '
   pendingDesc: 'Credited coins awaiting payout.'
   cur: 'Current Payment:'
