@@ -401,7 +401,7 @@ func (cs *Session) pushNewJob(result interface{}) error {
 	cs.Lock()
 	defer cs.Unlock()
 	// FIXME: Temporarily add ID for Claymore compliance
-	message := JSONPushMessage{Version: "2.0", Result: result, Id: 0}
+	message := JSONPushMessage{Version: "2.0", Result: result}
 	return cs.enc.Encode(&message)
 }
 
