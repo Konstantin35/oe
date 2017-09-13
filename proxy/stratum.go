@@ -441,8 +441,8 @@ func (s *ProxyServer) broadcastNewJobs() {
 	}
 	reply := []string{t.Header, t.Seed, s.diff}
 
-	s.sessionsMu.RLock()
-	defer s.sessionsMu.RUnlock()
+	s.sessionsMu.Lock()
+	defer s.sessionsMu.Unlock()
 
     count := 0
 	for m, _ := range s.sessions {
@@ -540,8 +540,8 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 		return
 	}
 
-	s.sessionsMu.RLock()
-	defer s.sessionsMu.RUnlock()
+	s.sessionsMu.Lock()
+	defer s.sessionsMu.Unlock()
 
     count := 0
 	for m, _ := range s.sessions {
@@ -610,8 +610,8 @@ func (s *ProxyServer) broadcastNewJobsOfficial() {
 		return
 	}
 
-	s.sessionsMu.RLock()
-	defer s.sessionsMu.RUnlock()
+	s.sessionsMu.Lock()
+	defer s.sessionsMu.Unlock()
 
     count := 0
 	for m, _ := range s.sessions {
