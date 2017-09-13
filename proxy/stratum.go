@@ -549,7 +549,7 @@ func (s *ProxyServer) broadcastNewJobsNH() {
             count++
         }
 	}
-	log.Printf("Broadcasting new nice hash job to %v stratum nice hash  miners", count)
+	log.Printf("Broadcasting new job to %v stratum nice hash  miners", count)
 
 	start := time.Now()
 	bcast := make(chan int, 2048)
@@ -619,7 +619,7 @@ func (s *ProxyServer) broadcastNewJobsOfficial() {
             count++
         }
 	}
-	log.Printf("Broadcasting new nice hash job to %v stratum official miners", count)
+	log.Printf("Broadcasting new job to %v stratum official miners", count)
 
 	start := time.Now()
 	bcast := make(chan int, 2048)
