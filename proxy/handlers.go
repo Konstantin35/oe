@@ -24,9 +24,11 @@ func (s *ProxyServer) handleLoginRPC(cs *Session, params []string, id string) (b
 	log.Printf("Stratum miner start connect %v", login)
 	login = strings.Split(login, ".")[0]
 	if !util.IsValidHexAddress(login) {
+		log.Printf("Invalid login %v", login)
 		return false, &ErrorReply{Code: -1, Message: "Invalid login"}
 	}
 	if !s.policy.ApplyLoginPolicy(login, cs.ip) {
+		log.Printf("blacklisted %v", login)
 		return false, &ErrorReply{Code: -1, Message: "You are blacklisted"}
 	}
 	cs.login = login

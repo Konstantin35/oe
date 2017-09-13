@@ -671,7 +671,7 @@ func (s *ProxyServer) broadcastNewJobsOfficial() {
 			}
 		}(m)
 	}
-	log.Printf("Nice hash jobs broadcast finished %s", time.Since(start))
+	log.Printf("Official jobs broadcast finished %s", time.Since(start))
 }
 
 func generateRandomString(strlen int) string {
