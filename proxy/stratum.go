@@ -453,7 +453,7 @@ func (s *ProxyServer) broadcastNewJobs() {
 	log.Printf("Broadcasting new job to %v stratum miners", count)
 
 	start := time.Now()
-	bcast := make(chan int, 1024)
+	bcast := make(chan int, 2048)
 	n := 0
 
 	for m, _ := range s.sessions {
@@ -552,7 +552,7 @@ func (s *ProxyServer) broadcastNewJobsNH() {
 	log.Printf("Broadcasting new nice hash job to %v stratum nice hash  miners", count)
 
 	start := time.Now()
-	bcast := make(chan int, 1024)
+	bcast := make(chan int, 2048)
 	n := 0
 
 	for m, _ := range s.sessions {
@@ -622,7 +622,7 @@ func (s *ProxyServer) broadcastNewJobsOfficial() {
 	log.Printf("Broadcasting new nice hash job to %v stratum official miners", count)
 
 	start := time.Now()
-	bcast := make(chan int, 1024)
+	bcast := make(chan int, 2048)
 	n := 0
 
 	for m, _ := range s.sessions {
