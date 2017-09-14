@@ -76,10 +76,13 @@ func (s *ProxyServer) handleSubmitRPC(cs *Session, login, id string, params []st
 		log.Printf("Malformed PoW result from %s@%s %v", login, cs.ip, params)
 		return false, &ErrorReply{Code: -1, Message: "Malformed PoW result"}
 	}
+	log.Println("TESTLOG: handleSubmitRPC2")
 	t := s.currentBlockTemplate()
+	log.Println("TESTLOG: handleSubmitRPC3")
 	exist, validShare := s.processShare(login, id, cs.ip, t, params)
+	log.Println("TESTLOG: handleSubmitRPC3.5")
 	ok := s.policy.ApplySharePolicy(cs.ip, !exist && validShare)
-
+	log.Println("TESTLOG: handleSubmitRPC4")
 	if exist {
 		log.Printf("Duplicate share from %s@%s %v", login, cs.ip, params)
         s.backend.WriteDuplicateShare(login, params[0])
