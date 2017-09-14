@@ -223,9 +223,9 @@ func (r *RedisClient) WriteBlock(login, id string, params []string, diff, roundD
 	if err != nil {
 		return false, err
 	} else {
-		cmdNo := 10
+		cmdNo := 11
 		if r.pps {
-			cmdNo = 11
+			cmdNo = 12
 		}
 		sharesMap, _ := cmds[cmdNo].(*redis.StringStringMapCmd).Result()
 		totalShares := int64(0)
@@ -251,6 +251,11 @@ func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string
 	tx.ZAdd(r.formatKey("hashrate", login), redis.Z{Score: float64(ts), Member: join(diff, id, ms)})
 	tx.Expire(r.formatKey("hashrate", login), expire) // Will delete hashrates for miners that gone
 	tx.HSet(r.formatKey("miners", login), "lastShare", strconv.FormatInt(ts, 10))
+	lastMode := "prop"
+	if r.pps {
+		lastMode = "pps"
+	}
+	tx.HSet(r.formatKey("miners", login), "lastShareMode", lastMode)
 }
 
 func (r *RedisClient) WriteAcceptedShare(login string, share string) error {
