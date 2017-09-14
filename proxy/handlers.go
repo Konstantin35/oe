@@ -61,7 +61,6 @@ func (s *ProxyServer) handleTCPSubmitRPC(cs *Session, id string, params []string
 }
 
 func (s *ProxyServer) handleSubmitRPC(cs *Session, login, id string, params []string) (bool, *ErrorReply) {
-	log.Println("TESTLOG: handleSubmitRPC")
 	if !workerPattern.MatchString(id) {
 		id = "0"
 	}
@@ -76,7 +75,6 @@ func (s *ProxyServer) handleSubmitRPC(cs *Session, login, id string, params []st
 		log.Printf("Malformed PoW result from %s@%s %v", login, cs.ip, params)
 		return false, &ErrorReply{Code: -1, Message: "Malformed PoW result"}
 	}
-	log.Println("TESTLOG: handleSubmitRPC2")
 	t := s.currentBlockTemplate()
 	log.Println("TESTLOG: handleSubmitRPC3")
 	exist, validShare := s.processShare(login, id, cs.ip, t, params)

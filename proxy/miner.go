@@ -17,7 +17,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 	hashNoNonce := params[1]
 	nonce, _ := strconv.ParseUint(strings.Replace(nonceHex, "0x", "", -1), 16, 64)
 	shareDiff := s.config.Proxy.Difficulty
-
+	log.Println("TESTLOG: processShare")
 	h, ok := t.headers[hashNoNonce]
 	if !ok {
 		log.Printf("Stale share from %v@%v", login, ip)
@@ -40,7 +40,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 		nonce:       nonce,
 		mixDigest:   common.HexToHash(""),
 	}
-
+	log.Println("TESTLOG: processShare1")
     verified, mixDigest := hasher.Verify(share)
 	if !verified {
         s.backend.WriteInvalidShare(login, nonceHex)
@@ -50,6 +50,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 
     verified, _ = hasher.Verify(block)
 	if verified {
+		log.Println("TESTLOG: processShare2")
 		ok, err := s.rpc().SubmitBlock(params)
 		if err != nil {
 			log.Printf("Block submission failure at height %v for %v: %v", h.height, t.Header, err)
@@ -58,6 +59,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 			return false, false
 		} else {
 			s.fetchBlockTemplate()
+			log.Println("TESTLOG: processShare3")
 			exist, err := s.backend.WriteBlock(login, id, params, shareDiff, h.diff.Int64(), h.height, s.hashrateExpiration)
 			if exist {
 				return true, false
@@ -70,6 +72,7 @@ func (s *ProxyServer) processShare(login, id, ip string, t *BlockTemplate, param
 			log.Printf("Block found by miner %v@%v at height %d", login, ip, h.height)
 		}
 	} else {
+		log.Println("TESTLOG: processShare4")
 		exist, err := s.backend.WriteShare(login, id, params, shareDiff, h.height, s.hashrateExpiration)
 		if exist {
 			return true, false
