@@ -422,9 +422,10 @@ func (self *ProxyServer) setDeadline(conn *net.TCPConn) {
 }
 
 func (s *ProxyServer) registerSession(cs *Session) {
-
+	log.Println("TESTLOG: registerSession 1")
 	s.sessionsMu.Lock()
 	defer s.sessionsMu.Unlock()
+	log.Println("TESTLOG: registerSession 2")
 	s.sessions[cs] = struct{}{}
 }
 
@@ -465,6 +466,7 @@ func (s *ProxyServer) broadcastNewJobs() {
 
 		go func(cs *Session) {
 			err := cs.pushNewJob(&reply)
+			log.Println("TESTLOG: broadcastNewJobs reply:", reply)
 			<-bcast
 			if err != nil {
 				log.Printf("broadcastNewJobs: Job transmit error to %v@%v: %v", cs.login, cs.ip, err)
