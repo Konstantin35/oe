@@ -66,6 +66,7 @@ type PolicyServer struct {
 
 func Start(cfg *Config, storage *storage.RedisClient) *PolicyServer {
 	s := &PolicyServer{config: cfg, startedAt: util.MakeTimestamp()}
+	return s //FIXME
 	grace := util.MustParseDuration(cfg.Limits.Grace)
 	s.grace = int64(grace / time.Millisecond)
 	s.banChannel = make(chan string, 64)
@@ -182,16 +183,19 @@ func (s *PolicyServer) Get(ip string) *Stats {
 }
 
 func (s *PolicyServer) BanClient(ip string) {
+	return //FIXME
 	x := s.Get(ip)
 	s.forceBan(x, ip)
 }
 
 func (s *PolicyServer) IsBanned(ip string) bool {
+	return false //FIXME
 	x := s.Get(ip)
 	return atomic.LoadInt32(&x.Banned) > 0
 }
 
 func (s *PolicyServer) ApplyLimitPolicy(ip string) bool {
+	return true // FIXME
 	if !s.config.Limits.Enabled {
 		return true
 	}
@@ -203,11 +207,9 @@ func (s *PolicyServer) ApplyLimitPolicy(ip string) bool {
 }
 
 func (s *PolicyServer) ApplyLoginPolicy(addy, ip string) bool {
-	log.Println("TESTLOG: ApplyLoginPolicy1")
+	return true // FIXME
 	if s.InBlackList(addy) {
-		log.Println("TESTLOG: ApplyLoginPolicy2")
 		x := s.Get(ip)
-		log.Println("TESTLOG: ApplyLoginPolicy3")
 		s.forceBan(x, ip)
 		return false
 	}
@@ -215,6 +217,7 @@ func (s *PolicyServer) ApplyLoginPolicy(addy, ip string) bool {
 }
 
 func (s *PolicyServer) ApplyMalformedPolicy(ip string) bool {
+	return true // FIXME
 	x := s.Get(ip)
 	n := x.incrMalformed()
 	if n >= s.config.Banning.MalformedLimit {
@@ -225,8 +228,7 @@ func (s *PolicyServer) ApplyMalformedPolicy(ip string) bool {
 }
 
 func (s *PolicyServer) ApplySharePolicy(ip string, validShare bool) bool {
-	// FIXME only for testing
-	return true
+	return true // FIXME
 	x := s.Get(ip)
 	x.Lock()
 
