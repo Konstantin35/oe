@@ -220,7 +220,6 @@ func (s *ProxyServer) handleClient(w http.ResponseWriter, r *http.Request, ip st
 }
 
 func (cs *Session) handleMessage(s *ProxyServer, r *http.Request, req *JSONRpcReq) {
-	log.Println("TESTLOG: handleMessage 1: ")
 	if req.Id == nil {
 		log.Printf("Missing RPC id from %s", cs.ip)
 		s.policy.ApplyMalformedPolicy(cs.ip)
@@ -240,7 +239,6 @@ func (cs *Session) handleMessage(s *ProxyServer, r *http.Request, req *JSONRpcRe
 		cs.sendError(req.Id, errReply)
 		return
 	}
-	log.Println("TESTLOG: handleMessage 2: ", req.Method)
 	// Handle RPC methods
 	switch req.Method {
 	case "eth_getWork":
