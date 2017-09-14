@@ -49,11 +49,11 @@ func (s *ProxyServer) handleGetWorkRPC(cs *Session) ([]string, *ErrorReply) {
 
 // Stratum
 func (s *ProxyServer) handleTCPSubmitRPC(cs *Session, id string, params []string) (bool, *ErrorReply) {
-	log.Println('TESTLOG: handleTCPSubmitRPC1')
+	log.Println("TESTLOG: handleTCPSubmitRPC1")
 	s.sessionsMu.RLock()
 	_, ok := s.sessions[cs]
 	s.sessionsMu.RUnlock()
-	log.Println('TESTLOG: handleTCPSubmitRPC2')
+	log.Println("TESTLOG: handleTCPSubmitRPC2")
 	if !ok {
 		return false, &ErrorReply{Code: 25, Message: "Not subscribed"}
 	}
@@ -61,7 +61,7 @@ func (s *ProxyServer) handleTCPSubmitRPC(cs *Session, id string, params []string
 }
 
 func (s *ProxyServer) handleSubmitRPC(cs *Session, login, id string, params []string) (bool, *ErrorReply) {
-	log.Println('TESTLOG: handleSubmitRPC')
+	log.Println("TESTLOG: handleSubmitRPC")
 	if !workerPattern.MatchString(id) {
 		id = "0"
 	}
