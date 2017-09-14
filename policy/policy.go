@@ -143,6 +143,7 @@ func (s *PolicyServer) resetStats() {
 }
 
 func (s *PolicyServer) refreshState() {
+	return
 	s.Lock()
 	defer s.Unlock()
 	var err error
