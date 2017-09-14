@@ -202,8 +202,11 @@ func (s *PolicyServer) ApplyLimitPolicy(ip string) bool {
 }
 
 func (s *PolicyServer) ApplyLoginPolicy(addy, ip string) bool {
+	log.Println("TESTLOG: ApplyLoginPolicy1")
 	if s.InBlackList(addy) {
+		log.Println("TESTLOG: ApplyLoginPolicy2")
 		x := s.Get(ip)
+		log.Println("TESTLOG: ApplyLoginPolicy3")
 		s.forceBan(x, ip)
 		return false
 	}
@@ -260,9 +263,11 @@ func (x *Stats) resetShares() {
 }
 
 func (s *PolicyServer) forceBan(x *Stats, ip string) {
+	log.Println("forceBan1")
 	if !s.config.Banning.Enabled || s.InWhiteList(ip) {
 		return
 	}
+	log.Println("forceBan2")
 	atomic.StoreInt64(&x.BannedAt, util.MakeTimestamp())
 
 	if atomic.CompareAndSwapInt32(&x.Banned, 0, 1) {

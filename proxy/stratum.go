@@ -118,6 +118,7 @@ func removeHexPrefix(str string) string {
 
 func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 	// Handle RPC methods
+	log.Println("TESTLOG req.Method: ", req.Method)
 	switch req.Method {
 	case "mining.subscribe":
 		var params []string
@@ -352,14 +353,12 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 		return cs.sendTCPResult(req.Id, reply)
 	case "eth_getWork":
-        cs.protocolType = "stratum"
 		reply, errReply := s.handleGetWorkRPC(cs)
 		if errReply != nil {
 			return cs.sendTCPError(req.Id, errReply)
 		}
 		return cs.sendTCPResult(req.Id, &reply)
 	case "eth_submitWork":
-        cs.protocolType = "stratum"
 		var params []string
 		err := json.Unmarshal(*req.Params, &params)
 		if err != nil {
@@ -372,7 +371,6 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 		return cs.sendTCPResult(req.Id, &reply)
 	case "eth_submitHashrate":
-        cs.protocolType = "stratum"
 		return cs.sendTCPResult(req.Id, true)
 	default:
     log.Println("Handle unknow stratum method: ", req.Method)
