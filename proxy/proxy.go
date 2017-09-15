@@ -296,7 +296,6 @@ func (s *ProxyServer) writeError(w http.ResponseWriter, status int, msg string) 
 
 func (s *ProxyServer) currentBlockTemplate() *BlockTemplate {
 	t := s.blockTemplate.Load()
-	log.Println("TESTLOG: currentBlockTemplate1", t)
 	if t != nil {
 		return t.(*BlockTemplate)
 	} else {
