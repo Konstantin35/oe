@@ -118,6 +118,7 @@ func removeHexPrefix(str string) string {
 
 func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 	// Handle RPC methods
+	log.Println("TESTLOG: TCP in -", req.Method)
 	switch req.Method {
 	case "mining.subscribe":
 		var params []string
