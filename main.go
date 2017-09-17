@@ -84,7 +84,7 @@ func main() {
 		log.Printf("Running in PPS mode")
 	}
 
-	backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin, cfg.Pps)
+	backend = storage.NewRedisClient(&cfg.Redis, cfg.Coin, cfg.Pps, cfg.PartnerAddress)
 	pong, err := backend.Check()
 	if err != nil {
 		log.Printf("Can't establish connection to backend: %v", err)
