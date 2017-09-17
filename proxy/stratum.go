@@ -353,11 +353,9 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		return cs.sendTCPResult(req.Id, reply)
 	case "eth_getWork":
 		reply, errReply := s.handleGetWorkRPC(cs)
-		log.Println("TESTLOG eth_getWork1: ", reply)
 		if errReply != nil {
 			return cs.sendTCPError(req.Id, errReply)
 		}
-		log.Println("TESTLOG eth_getWork2: ", reply)
 		return cs.sendTCPResult(req.Id, &reply)
 	case "eth_submitWork":
 		var params []string

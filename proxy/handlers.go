@@ -38,13 +38,10 @@ func (s *ProxyServer) handleLoginRPC(cs *Session, params []string, id string) (b
 }
 
 func (s *ProxyServer) handleGetWorkRPC(cs *Session) ([]string, *ErrorReply) {
-	log.Println("TESTLOG handleGetWorkRPC: ")
 	t := s.currentBlockTemplate()
-	log.Println("TESTLOG handleGetWorkRPC2: ")
 	if t == nil || len(t.Header) == 0 || s.isSick() {
 		return nil, &ErrorReply{Code: 0, Message: "Work not ready"}
 	}
-	log.Println("TESTLOG handleGetWorkRPC3: ")
 	return []string{t.Header, t.Seed, s.diff}, nil
 }
 
