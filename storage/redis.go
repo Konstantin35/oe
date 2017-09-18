@@ -83,6 +83,7 @@ type Miner struct {
 type Worker struct {
 	Miner
 	TotalHR int64 `json:"hr2"`
+	IsPPS   bool  `json:"isPPS"`
 }
 
 func NewRedisClient(cfg *Config, prefix string, pps bool, partner string) *RedisClient {
@@ -254,14 +255,14 @@ func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string
 	} else {
 		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login, diff)
 	}
-	tx.ZAdd(r.formatKey("hashrate"), redis.Z{Score: float64(ts), Member: join(diff, login, id, ms)})
-	tx.ZAdd(r.formatKey("hashrate", login), redis.Z{Score: float64(ts), Member: join(diff, id, ms)})
-	tx.Expire(r.formatKey("hashrate", login), expire) // Will delete hashrates for miners that gone
-	tx.HSet(r.formatKey("miners", login), "lastShare", strconv.FormatInt(ts, 10))
 	lastMode := "prop"
 	if r.pps {
 		lastMode = "pps"
 	}
+	tx.ZAdd(r.formatKey("hashrate"), redis.Z{Score: float64(ts), Member: join(diff, login, id, ms)})
+	tx.ZAdd(r.formatKey("hashrate", login), redis.Z{Score: float64(ts), Member: join(diff, id, ms, lastMode)})
+	tx.Expire(r.formatKey("hashrate", login), expire) // Will delete hashrates for miners that gone
+	tx.HSet(r.formatKey("miners", login), "lastShare", strconv.FormatInt(ts, 10))
 	tx.HSet(r.formatKey("miners", login), "lastShareMode", lastMode)
 }
 
@@ -1024,7 +1025,11 @@ func convertWorkersStats(window int64, raw *redis.ZSliceCmd) map[string]Worker {
 		if score >= now-window {
 			worker.HR += share
 		}
-
+		if len(parts) > 2  && parts[3] == "pps"{
+			worker.IsPPS = true
+		} else {
+			worker.IsPPS = false
+		}
 		if worker.LastBeat < score {
 			worker.LastBeat = score
 		}

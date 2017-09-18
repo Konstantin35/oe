@@ -13,5 +13,11 @@ export default Ember.Controller.extend({
       this.set('model.login', value);
       return value;
     }
+  }),
+  dailyReward: Ember.computed('stats', {
+    get() {
+      return (1000000 / this.get('stats').get('difficulty') * 5 * 0.99 * 24 * 3600).toFixed(8)
+    }
   })
+  
 });

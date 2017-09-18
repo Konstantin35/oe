@@ -38,6 +38,21 @@
 <div class="container">
   <div class="col-md-8">
     {{format-html-message 'index.help' StratumPort=config.StratumPort}}
+    <table class="table table-bordered table-condensed">
+      <tbody>
+      <tr>
+        <th class="warning" colspan="2">PPS 收益公式： 算力 ÷ 当前难度 × 5 × (1 - 1%) × 时间s</th>
+      </tr>
+      <tr>
+        <td>
+          当前 PPS 预计收益：
+        </td>
+        <td>
+          {{dailyReward}} ETH /天/1MHs <br />
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
   <div class="col-md-4">
     <h2 style="font-size: 24px">

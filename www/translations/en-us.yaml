@@ -120,8 +120,8 @@ miner:
 account:
   propShare: 'prop share'
   propShareDesc: 'ratio that you contribute in current round'
-  unpaidShares: 'unpaid pps shares'
-  unpaidSharesDesc: 'Estimated Reward:'
+  unpaidShares: 'unpaid pps reward'
+  unpaidSharesDesc: 'unpaid pps reward will be transfered to pending balnce shortly'
   imBalance: 'Immature Balance:'
   imBalanceDesc: 'Preliminary balance awaiting blocks to mature. (PPLNS only)'
   pending: 'Pending Balance: '
@@ -135,6 +135,7 @@ account:
   hashrate30m: ' Hashrate (30m): '
   hashrate3h: '  Hashrate (24h): '
   shareStat: 'Share (last 1h)：'
+  shareStatDesc: '依次为的：接受数 | 过期数 | 重复数 | 无效数'
   found: ' Blocks Found: '
   totalPyaments: ' Total Payments: '
   round: ' Your Round Share: '

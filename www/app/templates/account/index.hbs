@@ -13,8 +13,8 @@
       </thead>
       <tbody>
         {{#each-in model.workers as |k v|}}
-          <tr class="{{if v.offline "warning" "success"}}">
-            <td>{{k}}</td>
+          <tr class="{{if v.offline "warning" ""}}">
+            <td><span class="{{if v.isPPS "text-info" "text-success"}}">●</span> {{k}}</td>
             <td>{{format-hashrate v.hr}}</td>
             <td>{{format-hashrate v.hr2}}</td>
             <td>{{format-relative (seconds-to-ms v.lastBeat)}}</td>
