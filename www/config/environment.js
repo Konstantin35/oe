@@ -1,6 +1,17 @@
 /* jshint node: true */
 
-module.exports = function(environment) {
+module.exports = function(env) {
+  var ExplorerBase, ApiUrl
+  var environment = env.split('-')[0]
+  var coin = env.split('-')[1] || 'eth'
+  if (coin === 'eth') {
+    ExplorerBase = 'https://etherscan.io'
+    ApiUrl = 'http://shengupiao.com:8090/'
+  }
+  if (coin === 'etc') {
+    ExplorerBase = 'http://gastracker.io'
+    ApiUrl = 'http://shengupiao.com:8091/'
+  }
   var ENV = {
     modulePrefix: 'open-ethereum-pool',
     environment: environment,
@@ -15,7 +26,9 @@ module.exports = function(environment) {
 
     APP: {
       // API host and port
-      ApiUrl: 'http://shengupiao.com:8090/',
+      ApiUrl: ApiUrl,
+      coin: coin,
+      ExplorerBase: ExplorerBase,
 
       // HTTP mining endpoint
       HttpHost: 'http://shengupiao.com',

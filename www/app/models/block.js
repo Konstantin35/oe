@@ -1,6 +1,8 @@
 import Ember from 'ember';
+import config from '../config/environment';
 
 var Block = Ember.Object.extend({
+	ExplorerBase: config.APP.ExplorerBase,
 	variance: Ember.computed('difficulty', 'shares', function() {
 		var percent = this.get('shares') / this.get('difficulty');
 		if (!percent) {
