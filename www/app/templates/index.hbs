@@ -2,8 +2,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-2" style="text-align: center;">
-        <img src="/eth.png" alt="" style="width: 100px;height:100px" >
-        {{!-- <img src="/etc.png" alt="" style="width: 100px;height:100px;" > --}}
+        <img src="/{{config.coin}}.png" alt="" style="width: 100px;height:100px" >
       </div>
       <div class="col-md-3 stats">
         <div>{{t 'index.minersTotal'}}: <span id="poolHashrate">{{format-number stats.model.minersTotal}}</span></div>

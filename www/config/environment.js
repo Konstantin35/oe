@@ -1,9 +1,8 @@
 /* jshint node: true */
 
-module.exports = function(env) {
+module.exports = function(environment) {
   var ExplorerBase, ApiUrl
-  var environment = env.split('-')[0]
-  var coin = env.split('-')[1] || 'eth'
+  var coin = 'eth'
   if (coin === 'eth') {
     ExplorerBase = 'https://etherscan.io'
     ApiUrl = 'http://shengupiao.com:8090/'
