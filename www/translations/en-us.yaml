@@ -118,6 +118,8 @@ miner:
   col3: 'Last Beat'
   noMiner: 'No miners'
 account:
+  yourWorker: 'Your Workers'
+  offline: 'offline'
   propShare: 'prop share'
   propShareDesc: 'ratio that you contribute in current round'
   unpaidShares: 'unpaid pps reward'

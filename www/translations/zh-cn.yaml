@@ -52,22 +52,37 @@ index:
         <p>NewBlock 在全世界有多个节点，你可以选择离你的矿机最近的节点：</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
-            <th class=\"info\" colspan=\"2\">ETH</th> 
+            <th colspan=\"2\">
+              <img src=\"/eth.png\" style=\"width: 20px;height:20px\" >
+              <span style=\"font-size: 17px;\">ETH</span>
+            </th> 
           </tr>
           <tr>
-            <td>ETH 华北 PPLNS</td><td>huabei.newblock.org:8008</td>
+            <td>
+            <span class=\"text-success\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
+            ETH 华北 PPLNS</td><td>huabei.newblock.org:8008</td>
           </tr>
           <tr>
-            <td>ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
+            <td>
+            <span class=\"text-info\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
+            ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
           </tr>
           <tr>
-            <th class=\"success\" colspan=\"2\">ETC</th>
+            <th colspan=\"2\">
+
+              <img src=\"/etc.png\" style=\"width: 20px;height:20px\" >
+              <span style=\"font-size: 17px;\">ETC</span>
+          </th>
           </tr>
           <tr>
-            <td>ETC 华北 PPLNS</td><td>huabei.newblock.org:8009</td>
+            <td>
+            <span class=\"text-success\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
+            ETC 华北 PPLNS</td><td>huabei.newblock.org:8009</td>
           </tr>
           <tr>
-            <td>ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
+            <td>
+            <span class=\"text-info\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
+            ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
           </tr>
         </table>
       </dd>
@@ -118,6 +133,8 @@ miner:
   col3: '上次提交'
   noMiner: '暂无矿工'
 account:
+  yourWorker: '你的矿机'
+  offline: '离线'
   propShare: 'PPLNS 贡献：'
   propShareDesc: '相比于其他矿工，你在本轮的贡献占比'
   unpaidShares: 'PPS 未成熟余额：'
