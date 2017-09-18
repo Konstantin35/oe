@@ -297,6 +297,8 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 		shareChart, err := s.backend.GetShareChart(login)
 		if err == nil {
 			stats["shareChart"] = shareChart
+		} else {
+			log.Printf("Failed to fetch shareChart from backend: %v", err)
 		}
 
 		reply = &Entry{stats: stats, updatedAt: now}
