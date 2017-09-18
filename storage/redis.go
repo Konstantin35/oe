@@ -1025,7 +1025,7 @@ func convertWorkersStats(window int64, raw *redis.ZSliceCmd) map[string]Worker {
 		if score >= now-window {
 			worker.HR += share
 		}
-		if len(parts) > 2  && parts[3] == "pps"{
+		if len(parts) > 3 && parts[3] == "pps"{
 			worker.IsPPS = true
 		} else {
 			worker.IsPPS = false
