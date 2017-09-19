@@ -179,3 +179,7 @@ h4.note {
 .stats > div > span:first-of-type{
 	font-weight: bold;
 }
+
+.text-info {
+  color: #fdbc8f;
+}
