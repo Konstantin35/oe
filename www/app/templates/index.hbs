@@ -1,3 +1,4 @@
+{{#unless config.minimalUI }}
 <div class="jumbotron">
   <div class="container">
     <div class="row">
@@ -20,6 +21,7 @@
     </div>
   </div>
 </div>
+{{/unless}}
 <div class="container">
   <div class="stats" style="margin: 40px auto;">
     <h4 style="text-align: center">{{t 'index.lookupTitle'}}</h4>
@@ -74,7 +76,7 @@
     </div>
   </div>
 </div>
-
+{{#unless config.minimalUI }}
 <footer class="footer">
   <div class="container">
     <div style="float: right;margin-top: 20px;">
@@ -83,3 +85,4 @@
     <p class="text-muted">&copy; NewBlock · 2017</p>
   </div>
 </footer>
+{{/unless}}

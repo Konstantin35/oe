@@ -3,6 +3,7 @@ import config from '../config/environment';
 
 export default Ember.Controller.extend({
   intl: Ember.inject.service(),
+  minimalUI: config.APP.minimalUI,
   get config() {
     return config.APP;
   },

@@ -24,6 +24,7 @@ type RedisClient struct {
 	prefix string
 	pps bool
 	partner string
+	partnerCommissionRate int64
 }
 
 type BlockData struct {
@@ -86,14 +87,14 @@ type Worker struct {
 	IsPPS   bool  `json:"isPPS"`
 }
 
-func NewRedisClient(cfg *Config, prefix string, pps bool, partner string) *RedisClient {
+func NewRedisClient(cfg *Config, prefix string, pps bool, partner string, partnerCommissionRate int64) *RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     cfg.Endpoint,
 		Password: cfg.Password,
 		DB:       cfg.Database,
 		PoolSize: cfg.PoolSize,
 	})
-	return &RedisClient{client: client, prefix: prefix, pps: pps, partner: partner}
+	return &RedisClient{client: client, prefix: prefix, pps: pps, partner: partner, partnerCommissionRate: partnerCommissionRate}
 }
 
 func (r *RedisClient) Client() *redis.Client {
@@ -247,10 +248,10 @@ func (r *RedisClient) WriteBlock(login, id string, params []string, diff, roundD
 
 func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string, diff int64, expire time.Duration) {
 	if r.pps {
-		tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, diff)
+		tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, diff * (100 - r.partnerCommissionRate) / 100)
 		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login + "$pps", diff)
 		if util.IsValidHexAddress(r.partner) {
-			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff / 100)
+			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff / 100 * (1 + r.partnerCommissionRate))
 		}
 	} else {
 		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login, diff)

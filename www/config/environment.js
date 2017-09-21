@@ -26,6 +26,7 @@ module.exports = function(environment) {
     APP: {
       // API host and port
       ApiUrl: ApiUrl,
+      minimalUI: true,
       coin: coin,
       ExplorerBase: ExplorerBase,
 

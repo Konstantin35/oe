@@ -19,6 +19,7 @@ type Config struct {
 	Coin  string          `json:"coin"`
 	Pps   bool            `json:"pps"`
 	PartnerAddress string `json:"partnerAddress"`
+	PartnerCommissionRate int64 `json:"partnerCommissionRate"`
 	Redis storage.Config  `json:"redis"`
 
 	BlockUnlocker payouts.UnlockerConfig `json:"unlocker"`
