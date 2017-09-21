@@ -28,7 +28,7 @@ module.exports = function(environment) {
       ApiUrl: ApiUrl,
 
       minimalUI: true,
-      partnerAddress: 'f6pool.com:8099',
+      partnerAddress: 'cn.f6pool.com:8099',
 
       coin: coin,
       ExplorerBase: ExplorerBase,
