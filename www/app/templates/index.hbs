@@ -40,13 +40,16 @@
   </div>
 </div>
 {{#if config.partnerAddress }}
-<div class="container">
-  <h2 style="text-align: center">
+<div class="container" style="text-align: center">
+  <h2>
     挖矿地址：
     <span style="color: red;">
       {{config.partnerAddress}}
     </span>
   </h2>
+  <h5>
+    当前 PPS 预计收益： {{dailyReward}} {{config.coin}}/天/1MHs <br />
+  </h5>
 </div>
 {{/if}}
 {{#unless config.minimalUI }}
