@@ -26,7 +26,10 @@ module.exports = function(environment) {
     APP: {
       // API host and port
       ApiUrl: ApiUrl,
+
       minimalUI: true,
+      partnerAddress: 'f6pool.com:8099',
+
       coin: coin,
       ExplorerBase: ExplorerBase,
 

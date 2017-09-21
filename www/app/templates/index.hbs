@@ -1,4 +1,8 @@
-{{#unless config.minimalUI }}
+{{#if config.minimalUI }}
+<div style="text-align: center; padding: 40px;">
+  <img src="/{{config.coin}}.png" alt="" style="width: 100px;height:100px" >
+</div>
+{{else}}
 <div class="jumbotron">
   <div class="container">
     <div class="row">
@@ -21,7 +25,7 @@
     </div>
   </div>
 </div>
-{{/unless}}
+{{/if}}
 <div class="container">
   <div class="stats" style="margin: 40px auto;">
     <h4 style="text-align: center">{{t 'index.lookupTitle'}}</h4>
@@ -35,9 +39,19 @@
     </div>
   </div>
 </div>
-
+{{#if config.partnerAddress }}
 <div class="container">
-  <div class="col-md-8">
+  <h2 style="text-align: center">
+    挖矿地址：
+    <span style="color: red;">
+      {{config.partnerAddress}}
+    </span>
+  </h2>
+</div>
+{{/if}}
+{{#unless config.minimalUI }}
+<div class="container">
+  <div class="col-md-9">
     {{format-html-message 'index.help' StratumPort=config.StratumPort}}
     <table class="table table-bordered table-condensed">
       <tbody>
@@ -55,7 +69,7 @@
       </tbody>
     </table>
   </div>
-  <div class="col-md-4">
+  <div class="col-md-3">
     <h2 style="font-size: 24px">
       <strong>{{t 'index.featureTitle'}}</strong>
     </h2>
@@ -76,7 +90,6 @@
     </div>
   </div>
 </div>
-{{#unless config.minimalUI }}
 <footer class="footer">
   <div class="container">
     <div style="float: right;margin-top: 20px;">
