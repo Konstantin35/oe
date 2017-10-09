@@ -206,7 +206,7 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 		}
 		splitData := strings.Split(params[0], ".")
 		if len(splitData) > 1 {
-			req.Worker = splitData[1]
+			req.Worker = strings.Join(splitData[1:], ".")
 		}
 		params[0] = addHexPrefix(splitData[0])
 
@@ -346,7 +346,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 			log.Println("Malformed stratum request params from", cs.ip)
 			return err
 		}
-		reply, errReply := s.handleLoginRPC(cs, params, req.Worker)
+		worker := req.Worker
+		if worker == "" {
+			worker = cs.worker
+		}
+		reply, errReply := s.handleLoginRPC(cs, params, worker)
 		if errReply != nil {
 			return cs.sendTCPError(req.Id, errReply)
 		}
@@ -364,7 +368,11 @@ func (cs *Session) handleTCPMessage(s *ProxyServer, req *StratumReq) error {
 			log.Println("Malformed stratum request params from", cs.ip)
 			return err
 		}
-		reply, errReply := s.handleTCPSubmitRPC(cs, req.Worker, params)
+		worker := req.Worker
+		if worker == "" {
+			worker = cs.worker
+		}
+		reply, errReply := s.handleTCPSubmitRPC(cs, worker, params)
 		if errReply != nil {
 			return cs.sendTCPError(req.Id, errReply)
 		}

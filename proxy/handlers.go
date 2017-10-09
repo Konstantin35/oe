@@ -32,6 +32,15 @@ func (s *ProxyServer) handleLoginRPC(cs *Session, params []string, id string) (b
 		return false, &ErrorReply{Code: -1, Message: "You are blacklisted"}
 	}
 	cs.login = login
+	if id == "" {
+		ss := strings.Split(params[0], ".")
+		if len(ss) > 1 {
+			id = strings.Join(ss[1:], ".")
+		}
+	}
+	if id != "" {
+		cs.worker = id
+	}
 	s.registerSession(cs)
 	log.Printf("Stratum miner connected %v@%v", login, cs.ip)
 	return true, nil

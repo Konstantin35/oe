@@ -46,6 +46,7 @@ type jobDetails struct {
 
 type Session struct {
 	ip  string
+	worker string
 	enc *json.Encoder
 
 	// Stratum
