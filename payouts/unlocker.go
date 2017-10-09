@@ -30,10 +30,18 @@ type UnlockerConfig struct {
 
 const minDepth = 16
 
-var constReward = math.MustParseBig256("5000000000000000000")
+var byzantiumBlockNumber int64 = 4370000
+
 // 4.9 * 0.96 = 4.704 | 5 * 0.99 = 4.95 | 4.9 * 0.99 = 4.851
+var constReward = math.MustParseBig256("5000000000000000000")
 var avaReward   = new(big.Rat).SetFloat64(4.851e18)
 var uncleReward = new(big.Int).Div(constReward, new(big.Int).SetInt64(32))
+
+
+// 2.94 * 0.99 = 2.9106
+var byzantiumConstReward = math.MustParseBig256("3000000000000000000")
+var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.9106e18)
+var byzantiumUncleReward = new(big.Int).Div(byzantiumConstReward, new(big.Int).SetInt64(32))
 
 // Donate 10% from pool fees to developers
 const donationFee = 10.0
@@ -47,7 +55,7 @@ type BlockUnlocker struct {
 	lastFail error
 }
 
-func NewBlockUnlocker(cfg *UnlockerConfig, backend *storage.RedisClient) *BlockUnlocker {
+func NewBlockUnlocker(cfg *UnlockerConfig, coin string, backend *storage.RedisClient) *BlockUnlocker {
 	if len(cfg.PoolFeeAddress) != 0 && !util.IsValidHexAddress(cfg.PoolFeeAddress) {
 		log.Fatalln("Invalid poolFeeAddress", cfg.PoolFeeAddress)
 	}
@@ -56,6 +64,9 @@ func NewBlockUnlocker(cfg *UnlockerConfig, backend *storage.RedisClient) *BlockU
 	}
 	if cfg.ImmatureDepth < minDepth {
 		log.Fatalf("Immature depth can't be < %v, your depth is %v", minDepth, cfg.ImmatureDepth)
+	}
+	if coin != "eth" {
+		byzantiumBlockNumber = 9223372036854775807 //  max integer
 	}
 	u := &BlockUnlocker{config: cfg, backend: backend}
 	u.rpc = rpc.NewRPCClient("BlockUnlocker", cfg.Daemon, cfg.Timeout)
@@ -203,9 +214,15 @@ func matchCandidate(block *rpc.GetBlockReply, candidate *storage.BlockData) bool
 
 func (u *BlockUnlocker) handleBlock(block *rpc.GetBlockReply, candidate *storage.BlockData) error {
 	// Initial 5 Ether static reward
-	reward := new(big.Int).Set(constReward)
 
 	correctHeight, err := strconv.ParseInt(strings.Replace(block.Number, "0x", "", -1), 16, 64)
+	reward := new(big.Int).Set(byzantiumConstReward)
+	uReward := byzantiumUncleReward
+	if (correctHeight < byzantiumBlockNumber) {
+		reward = new(big.Int).Set(constReward)
+		uReward = uncleReward
+	}
+
 	if err != nil {
 		return err
 	}
@@ -223,7 +240,7 @@ func (u *BlockUnlocker) handleBlock(block *rpc.GetBlockReply, candidate *storage
 	}
 
 	// Add reward for including uncles
-	rewardForUncles := big.NewInt(0).Mul(uncleReward, big.NewInt(int64(len(block.Uncles))))
+	rewardForUncles := big.NewInt(0).Mul(uReward, big.NewInt(int64(len(block.Uncles))))
 	reward.Add(reward, rewardForUncles)
 
 	candidate.Orphan = false
@@ -457,10 +474,24 @@ func (u *BlockUnlocker) unlockPpsRewards() {
 		return
 	}
 
+	blockHeight, err := strconv.ParseInt(strings.Replace(reply.Number, "0x", "", -1), 16, 64)
+	if err != nil {
+		log.Println("Error: Unlocker can't parse pending block number")
+		u.halt = true
+		u.lastFail = err
+		return
+	}
+
+
+	reward := byzantiumAvaReward
+	if (blockHeight < byzantiumBlockNumber) {
+		reward = avaReward
+	}
+
 	rewards := make(map[string]int64)
 	for login, shareDiff := range shares {
 		ratio := new(big.Rat).SetFloat64(float64(shareDiff) / float64(blockDiff))
-		r := new(big.Rat).Mul(avaReward, ratio)
+		r := new(big.Rat).Mul(reward, ratio)
 		rewards[login] += weiToShannonInt64(r)
 	}
 
@@ -533,7 +564,11 @@ func weiToShannonInt64(wei *big.Rat) int64 {
 }
 
 func getUncleReward(uHeight, height int64) *big.Int {
-	reward := new(big.Int).Set(constReward)
+
+	reward := new(big.Int).Set(byzantiumConstReward)
+	if (height < byzantiumBlockNumber) {
+		reward = new(big.Int).Set(constReward)
+	}
 	reward.Mul(big.NewInt(uHeight+8-height), reward)
 	reward.Div(reward, big.NewInt(8))
 	return reward
