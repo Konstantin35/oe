@@ -32,15 +32,15 @@ const minDepth = 16
 
 var byzantiumBlockNumber int64 = 9223372036854775807
 
-// 4.9 * 0.96 = 4.704 | 5 * 0.99 = 4.95 | 4.9 * 0.99 = 4.851
+// 4.9 * 0.96 = 4.704 | 5 * 0.99 = 4.95 | 4.9 * 0.99 = 4.851 | 4.8 * 0.99 = 4.752
 var constReward = math.MustParseBig256("5000000000000000000")
-var avaReward   = new(big.Rat).SetFloat64(4.851e18)
+var avaReward   = new(big.Rat).SetFloat64(4.752e18)
 var uncleReward = new(big.Int).Div(constReward, new(big.Int).SetInt64(32))
 
 
-// 2.94 * 0.99 = 2.9106
+// 2.94 * 0.99 = 2.9106 | 2.88 * 0.99 = 2.8512
 var byzantiumConstReward = math.MustParseBig256("3000000000000000000")
-var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.9106e18)
+var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.8512e18)
 var byzantiumUncleReward = new(big.Int).Div(byzantiumConstReward, new(big.Int).SetInt64(32))
 
 // Donate 10% from pool fees to developers
