@@ -30,7 +30,7 @@ type UnlockerConfig struct {
 
 const minDepth = 16
 
-var byzantiumBlockNumber int64 = 4370000
+var byzantiumBlockNumber int64 = 9223372036854775807
 
 // 4.9 * 0.96 = 4.704 | 5 * 0.99 = 4.95 | 4.9 * 0.99 = 4.851
 var constReward = math.MustParseBig256("5000000000000000000")
@@ -65,8 +65,11 @@ func NewBlockUnlocker(cfg *UnlockerConfig, coin string, backend *storage.RedisCl
 	if cfg.ImmatureDepth < minDepth {
 		log.Fatalf("Immature depth can't be < %v, your depth is %v", minDepth, cfg.ImmatureDepth)
 	}
-	if coin != "eth" {
-		byzantiumBlockNumber = 9223372036854775807 //  max integer
+	if coin == "eth" {
+		byzantiumBlockNumber = 4370000 //  max integer
+	}
+	if coin == "ropsten" {
+		byzantiumBlockNumber = 1700000
 	}
 	u := &BlockUnlocker{config: cfg, backend: backend}
 	u.rpc = rpc.NewRPCClient("BlockUnlocker", cfg.Daemon, cfg.Timeout)
