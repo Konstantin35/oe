@@ -40,7 +40,7 @@ var uncleReward = new(big.Int).Div(constReward, new(big.Int).SetInt64(32))
 
 // 2.94 * 0.99 = 2.9106 | 2.88 * 0.99 = 2.8512
 var byzantiumConstReward = math.MustParseBig256("3000000000000000000")
-var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.8512e18)
+var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.7000e18)
 var byzantiumUncleReward = new(big.Int).Div(byzantiumConstReward, new(big.Int).SetInt64(32))
 
 // Donate 10% from pool fees to developers
