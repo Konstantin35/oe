@@ -14,10 +14,10 @@ import (
 
 type Config struct {
     SentinelEnabled bool        `json:"sentinelEnabled"`
-	Endpoint        string      `json:"endpoint"`
-	Password        string      `json:"password"`
-	Database        int64       `json:"database"`
-	PoolSize        int         `json:"poolSize"`
+    Endpoint        string      `json:"endpoint"`
+    Password        string      `json:"password"`
+    Database        int64       `json:"database"`
+    PoolSize        int         `json:"poolSize"`
     MasterName      string      `json:"masterName"`
     SentinelAddrs   []string    `json:"sentinelAddrs"`
 }
