@@ -13,10 +13,13 @@ import (
 )
 
 type Config struct {
-	Endpoint string `json:"endpoint"`
-	Password string `json:"password"`
-	Database int64  `json:"database"`
-	PoolSize int    `json:"poolSize"`
+    SentinelEnabled bool        `json:"sentinelEnabled"`
+	Endpoint        string      `json:"endpoint"`
+	Password        string      `json:"password"`
+	Database        int64       `json:"database"`
+	PoolSize        int         `json:"poolSize"`
+    MasterName      string      `json:"masterName"`
+    SentinelAddrs   []string    `json:"sentinelAddrs"`
 }
 
 type RedisClient struct {
@@ -88,12 +91,25 @@ type Worker struct {
 }
 
 func NewRedisClient(cfg *Config, prefix string, pps bool, partner string, partnerCommissionRate int64) *RedisClient {
-	client := redis.NewClient(&redis.Options{
-		Addr:     cfg.Endpoint,
-		Password: cfg.Password,
-		DB:       cfg.Database,
-		PoolSize: cfg.PoolSize,
-	})
+    var client *redis.Client
+    if cfg.SentinelEnabled && len(cfg.MasterName) != 0 && len(cfg.SentinelAddrs) != 0 {
+        // sentinel mode
+        client = redis.NewFailoverClient(&redis.FailoverOptions{
+            MasterName:     cfg.MasterName,
+            SentinelAddrs:  cfg.SentinelAddrs,
+            Password:       cfg.Password,
+            DB:             cfg.Database,
+            PoolSize:       cfg.PoolSize,
+        })
+    } else {
+        // single instance
+        client = redis.NewClient(&redis.Options{
+            Addr:     cfg.Endpoint,
+            Password: cfg.Password,
+            DB:       cfg.Database,
+            PoolSize: cfg.PoolSize,
+        })
+    }
 	return &RedisClient{client: client, prefix: prefix, pps: pps, partner: partner, partnerCommissionRate: partnerCommissionRate}
 }
 

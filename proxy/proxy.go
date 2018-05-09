@@ -157,6 +157,12 @@ func (s *ProxyServer) rpc() *rpc.RPCClient {
 }
 
 func (s *ProxyServer) checkUpstreams() {
+    idx := atomic.LoadInt32(&s.upstream)
+    current := s.upstreams[idx]
+    if current.Check() {
+        return
+    }
+
 	candidate := int32(0)
 	backup := false
 
