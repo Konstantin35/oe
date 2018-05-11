@@ -144,13 +144,13 @@
 		},
 		{
 			"checksumSHA1": "yW2LwbV0dM2B9aauX946Cfx4tsY=",
-			"path": "github.com/shengupiao/ethash",
+			"path": "github.com/mcarloai/ethash",
 			"revision": "7e70ea8fc6dd7f0b66de4f2be2a0e75eb8d47121",
 			"revisionTime": "2017-08-17T08:19:45Z"
 		},
 		{
 			"checksumSHA1": "kjNEeX3oRBStYm9yNUUJuN5hcOs=",
-			"path": "github.com/shengupiao/ethash/src/libethash",
+			"path": "github.com/mcarloai/ethash/src/libethash",
 			"revision": "bc2b483e9dadd6a8c2e9e696a4ebf16aec4e41c2",
 			"revisionTime": "2017-08-07T10:27:16Z",
 			"tree": true
@@ -216,5 +216,5 @@
 			"revisionTime": "2016-06-27T09:56:34Z"
 		}
 	],
-	"rootPath": "github.com/shengupiao/open-ethereum-pool"
+	"rootPath": "github.com/mcarloai/open-ethereum-pool"
 }

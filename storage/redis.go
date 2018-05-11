@@ -9,7 +9,7 @@ import (
 
 	"gopkg.in/redis.v3"
 
-	"github.com/shengupiao/open-ethereum-pool/util"
+	"github.com/mcarloai/open-ethereum-pool/util"
 )
 
 type Config struct {
@@ -251,7 +251,8 @@ func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string
 		tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, diff * (100 - r.partnerCommissionRate) / 100)
 		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login + "$pps", diff)
 		if util.IsValidHexAddress(r.partner) {
-			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff / 100 * (1 + r.partnerCommissionRate))
+			//tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff / 100 * (1 + r.partnerCommissionRate))
+			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff * r.partnerCommissionRate / 100) //渠道商抽水比例
 		}
 	} else {
 		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login, diff)

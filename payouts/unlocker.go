@@ -10,9 +10,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/math"
 
-	"github.com/shengupiao/open-ethereum-pool/rpc"
-	"github.com/shengupiao/open-ethereum-pool/storage"
-	"github.com/shengupiao/open-ethereum-pool/util"
+	"github.com/mcarloai/open-ethereum-pool/rpc"
+	"github.com/mcarloai/open-ethereum-pool/storage"
+	"github.com/mcarloai/open-ethereum-pool/util"
 )
 
 type UnlockerConfig struct {
@@ -40,7 +40,7 @@ var uncleReward = new(big.Int).Div(constReward, new(big.Int).SetInt64(32))
 
 // 2.94 * 0.99 = 2.9106 | 2.88 * 0.99 = 2.8512
 var byzantiumConstReward = math.MustParseBig256("3000000000000000000")
-var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.7000e18)
+var byzantiumAvaReward   = new(big.Rat).SetFloat64(2.7000e18) //目前矿池统计得到的block平均收益
 var byzantiumUncleReward = new(big.Int).Div(byzantiumConstReward, new(big.Int).SetInt64(32))
 
 // Donate 10% from pool fees to developers

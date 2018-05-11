@@ -11,7 +11,7 @@ import (
     "strings"
     "math/rand"
 
-	"github.com/shengupiao/open-ethereum-pool/util"
+	"github.com/mcarloai/open-ethereum-pool/util"
 )
 
 const (
