@@ -156,7 +156,7 @@ func (s *ApiServer) collectStats() {
         sale2THR := make(map[string]int64)
         saleStats := make(map[string]interface{})
 
-        for id, _ := range stats["miners"].(map[string]interface{}) {
+        for id, _ := range stats["miners"].(map[string]storage.Miner) {
             workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
             if err != nil {
                 log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
