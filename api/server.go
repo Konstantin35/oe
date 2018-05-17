@@ -35,6 +35,7 @@ type ApiServer struct {
 	hashrateWindow      time.Duration
 	hashrateLargeWindow time.Duration
 	stats               atomic.Value
+    saleStats           atomic.Value
 	miners              map[string]*Entry
 	minersMu            sync.RWMutex
 	statsIntv           time.Duration
@@ -108,6 +109,7 @@ func (s *ApiServer) listen() {
 	r.HandleFunc("/api/blocks", s.BlocksIndex)
 	r.HandleFunc("/api/payments", s.PaymentsIndex)
 	r.HandleFunc("/api/accounts/{login:0x[0-9a-fA-F]{40}}", s.AccountIndex)
+	r.HandleFunc("/api/sales", s.SalesIndex)
 	r.NotFoundHandler = http.HandlerFunc(notFound)
 	err := http.ListenAndServe(s.config.Listen, r)
 	if err != nil {
@@ -146,6 +148,53 @@ func (s *ApiServer) collectStats() {
 			return
 		}
 	}
+
+    // calc hashrate by sales
+    if _, ok := stats["miners"]; ok {
+
+        sale2HR := make(map[string]int64)
+        sale2THR := make(map[string]int64)
+        saleStats := make(map[string]interface{})
+
+        for id, _ := range stats["miners"].(map[string]interface{}) {
+            workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
+            if err != nil {
+                log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
+                continue
+            }
+
+            if _, ok := workerStats["workers"]; ok {
+                for id, worker := range workerStats["workers"].(map[string]storage.Worker) {
+                    fields := strings.SplitN(id, "_", 2)
+                    saleId := "MinerBabe"
+                    if len(fields) == 2 {
+                        saleId = fields[0]
+                    }
+
+                    if _, ok := sale2HR[saleId]; ok {
+                        sale2HR[saleId] = sale2HR[saleId] + worker.HR
+                    } else {
+                        sale2HR[saleId] = worker.HR
+                    }
+
+                    if _, ok := sale2THR[saleId]; ok {
+                        sale2THR[saleId] = sale2THR[saleId] + worker.TotalHR
+                    } else {
+                        sale2THR[saleId] = worker.TotalHR
+                    }
+                }
+            }
+        }
+
+        for saleId, _ := range sale2HR {
+            s := make(map[string]int64)
+            s["hr"] = sale2HR[saleId]
+            s["thr"] = sale2THR[saleId]
+            saleStats[saleId] = s
+        }
+        s.saleStats.Store(saleStats)
+    }
+
 	s.stats.Store(stats)
 	log.Printf("Stats collection finished %s", time.Since(start))
 }
@@ -318,4 +367,22 @@ func (s *ApiServer) getStats() map[string]interface{} {
 		return stats.(map[string]interface{})
 	}
 	return nil
+}
+
+func (s *ApiServer) SalesIndex(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.WriteHeader(http.StatusOK)
+
+    ss := s.saleStats.Load()
+    saleStats := make(map[string]interface{})
+    if ss != nil {
+        saleStats = ss.(map[string]interface{})
+    }
+
+	err := json.NewEncoder(w).Encode(saleStats)
+	if err != nil {
+		log.Println("Error serializing API response: ", err)
+	}
 }
