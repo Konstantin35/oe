@@ -143,6 +143,11 @@ account:
   round: ' Your Round Share: '
   roundDesc: ' Percent of your contribution to current round.'
   epoch: 'Epoch Switch:'
-
+channel:
+  group: 'Group'
+  groupInfo: 'Group Info'
+  info1: '30 Minutes Average'
+  info2: '24 Hour Average'
+  noGroup: 'No group'
 
 

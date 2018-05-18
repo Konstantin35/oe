@@ -158,6 +158,10 @@ account:
   round: '本轮贡献：'
   roundDesc: '在本轮挖矿周期中你的贡献百分比'
   epoch: 'Epoch 转换：'
-
-
+channel:
+  group: '分组'
+  groupInfo: '分组信息'
+  info1: '30分钟平均算力'
+  info2: '24小时平均算力'
+  noGroup: '暂无分组'
 

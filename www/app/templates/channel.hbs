@@ -1,0 +1,32 @@
+<div class="jumbotron" style="padding:40px 0 15px 0;">
+  <div class="container">
+    <p class="lead" style="margin:0;">{{t 'channel.groupInfo'}}</p>
+  </div>
+</div>
+<div class="container">
+  {{#if model}}
+  <h4>{{t 'channel.group'}}</h4>
+  <div class="table-responsive">
+    <table class="table table-condensed table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>{{t 'channel.info1'}}</th>
+          <th>{{t 'channel.info2'}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each-in model as |key val|}}
+        <tr>
+          <td>{{key}}</td>
+          <td>{{format-hashrate val.hr}}</td>
+          <td>{{format-hashrate val.thr}}</td>
+        </tr>
+        {{/each-in}}
+      </tbody>
+    </table>
+  </div>
+  {{else}}
+  <h3>{{t 'channel.noGroup'}}</h3>
+  {{/if}}
+</div>
