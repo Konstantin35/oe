@@ -35,7 +35,7 @@ type ApiServer struct {
 	hashrateWindow      time.Duration
 	hashrateLargeWindow time.Duration
 	stats               atomic.Value
-    saleStats           atomic.Value
+	saleStats           atomic.Value
 	miners              map[string]*Entry
 	minersMu            sync.RWMutex
 	statsIntv           time.Duration
@@ -149,51 +149,51 @@ func (s *ApiServer) collectStats() {
 		}
 	}
 
-    // calc hashrate by sales
-    if _, ok := stats["miners"]; ok {
+	// calc hashrate by sales
+	if _, ok := stats["miners"]; ok {
 
-        sale2HR := make(map[string]int64)
-        sale2THR := make(map[string]int64)
-        saleStats := make(map[string]interface{})
+		sale2HR := make(map[string]int64)
+		sale2THR := make(map[string]int64)
+		saleStats := make(map[string]interface{})
 
-        for id, _ := range stats["miners"].(map[string]storage.Miner) {
-            workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
-            if err != nil {
-                log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
-                continue
-            }
+		for id, _ := range stats["miners"].(map[string]storage.Miner) {
+			workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
+			if err != nil {
+				log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
+				continue
+			}
 
-            if _, ok := workerStats["workers"]; ok {
-                for id, worker := range workerStats["workers"].(map[string]storage.Worker) {
-                    fields := strings.SplitN(id, "_", 2)
-                    saleId := "MinerBabe"
-                    if len(fields) == 2 {
-                        saleId = fields[0]
-                    }
+			if _, ok := workerStats["workers"]; ok {
+				for id, worker := range workerStats["workers"].(map[string]storage.Worker) {
+					fields := strings.SplitN(id, "_", 2)
+					saleId := "MinerBabe"
+					if len(fields) == 2 {
+						saleId = fields[0]
+					}
 
-                    if _, ok := sale2HR[saleId]; ok {
-                        sale2HR[saleId] = sale2HR[saleId] + worker.HR
-                    } else {
-                        sale2HR[saleId] = worker.HR
-                    }
+					if _, ok := sale2HR[saleId]; ok {
+						sale2HR[saleId] = sale2HR[saleId] + worker.HR
+					} else {
+						sale2HR[saleId] = worker.HR
+					}
 
-                    if _, ok := sale2THR[saleId]; ok {
-                        sale2THR[saleId] = sale2THR[saleId] + worker.TotalHR
-                    } else {
-                        sale2THR[saleId] = worker.TotalHR
-                    }
-                }
-            }
-        }
+					if _, ok := sale2THR[saleId]; ok {
+						sale2THR[saleId] = sale2THR[saleId] + worker.TotalHR
+					} else {
+						sale2THR[saleId] = worker.TotalHR
+					}
+				}
+			}
+		}
 
-        for saleId, _ := range sale2HR {
-            s := make(map[string]int64)
-            s["hr"] = sale2HR[saleId]
-            s["thr"] = sale2THR[saleId]
-            saleStats[saleId] = s
-        }
-        s.saleStats.Store(saleStats)
-    }
+		for saleId, _ := range sale2HR {
+			s := make(map[string]int64)
+			s["hr"] = sale2HR[saleId]
+			s["thr"] = sale2THR[saleId]
+			saleStats[saleId] = s
+		}
+		s.saleStats.Store(saleStats)
+	}
 
 	s.stats.Store(stats)
 	log.Printf("Stats collection finished %s", time.Since(start))
@@ -375,11 +375,11 @@ func (s *ApiServer) SalesIndex(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
 	w.WriteHeader(http.StatusOK)
 
-    ss := s.saleStats.Load()
-    saleStats := make(map[string]interface{})
-    if ss != nil {
-        saleStats = ss.(map[string]interface{})
-    }
+	ss := s.saleStats.Load()
+	saleStats := make(map[string]interface{})
+	if ss != nil {
+		saleStats = ss.(map[string]interface{})
+	}
 
 	err := json.NewEncoder(w).Encode(saleStats)
 	if err != nil {
