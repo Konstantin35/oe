@@ -16,12 +16,12 @@ export default Ember.Controller.extend({
   }),
   dailyReward: Ember.computed('stats', {
     get() {
-      return (1000000 / this.get('stats').get('difficulty') * 5 * 0.99 * 24 * 3600).toFixed(8);
+      return (1000000 / this.get('stats').get('difficulty') * 3.0 * 0.99 * 24 * 3600).toFixed(8);
     }
   }),
   dailyRewardPartner: Ember.computed('stats', {
     get() {
-      return (1000000 / this.get('stats').get('difficulty') * 5 * 0.97 * 24 * 3600).toFixed(8);
+      return (1000000 / this.get('stats').get('difficulty') * 3.0 * 0.99 * 24 * 3600).toFixed(8);
     }
   })
 });

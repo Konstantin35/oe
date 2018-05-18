@@ -7,7 +7,7 @@ app:
   about: '关于'
 index:
   title: '新块'
-  featureTitle: '为何选择 NewBlock？'
+  featureTitle: '为何选择 MinerbabePool？'
   lookupTitle: '查询状态 & 支付历史'
   lookupPlaceholder: '输入挖矿地址'
   lookup: '查询'
@@ -42,14 +42,14 @@ index:
     <p>
       <strong>完整实例:</strong>
       <pre>
-        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ETC_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
-        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ETC_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
+        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei-pool.minerbabe.com:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ETC_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
+        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei-pool.minerbabe.com:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ETC_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
       </pre>
     </p>
     <dl class=\"dl-horizontal\">
-      <dt><b style=\"color:red;\">huabei.newblock.org:8008</b></dt>
+      <dt><b style=\"color:red;\">huabei-pool.minerbabe.com:8008</b></dt>
       <dd>
-        <p>NewBlock 在全世界有多个节点，你可以选择离你的矿机最近的节点：</p>
+        <p>MinerbabePool 在全世界有多个节点，你可以选择离你的矿机最近的节点：</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
             <th colspan=\"2\">
@@ -60,12 +60,12 @@ index:
           <tr>
             <td>
             <span class=\"text-success\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
-            ETH 华北 PPLNS</td><td>huabei.newblock.org:8008</td>
+            ETH 华北 PPLNS</td><td>huabei-pool.minerbabe.com:8008</td>
           </tr>
           <tr>
             <td>
             <span class=\"text-info\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
-            ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
+            ETH 华北 PPS</td><td>huabei-pool.minerbabe.com:8018</td>
           </tr>
           <tr>
             <th colspan=\"2\">
@@ -77,12 +77,12 @@ index:
           <tr>
             <td>
             <span class=\"text-success\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
-            ETC 华北 PPLNS</td><td>huabei.newblock.org:8009</td>
+            ETC 华北 PPLNS</td><td>huabei-pool.minerbabe.com:8009</td>
           </tr>
           <tr>
             <td>
             <span class=\"text-info\" style=\"font-size: 10px;vertical-align: 2px;\">⬤</span>
-            ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
+            ETC 华北 PPS</td><td>huabei-pool.minerbabe.com:8019</td>
           </tr>
         </table>
       </dd>

@@ -5,11 +5,13 @@ module.exports = function(environment) {
   var coin = 'eth'
   if (coin === 'eth') {
     ExplorerBase = 'https://etherscan.io'
-    ApiUrl = 'http://shengupiao.com:8090/'
+    /*ApiUrl = 'http://shengupiao.com:8090/'*/
+    ApiUrl = 'http://39.107.38.195:8090/'
   }
   if (coin === 'etc') {
     ExplorerBase = 'http://gastracker.io'
-    ApiUrl = 'http://shengupiao.com:8091/'
+    /*ApiUrl = 'http://shengupiao.com:8091/'*/
+    ApiUrl = 'http://39.107.38.195:8091/'
   }
   var ENV = {
     modulePrefix: 'open-ethereum-pool',
@@ -28,17 +30,17 @@ module.exports = function(environment) {
       ApiUrl: ApiUrl,
 
       minimalUI: false,
-      partnerAddress: 'cn.f6pool.com:8099',
+      partnerAddress: 'huabei-pool.minerbabe.com:8008',
 
       coin: coin,
       ExplorerBase: ExplorerBase,
 
       // HTTP mining endpoint
-      HttpHost: 'http://shengupiao.com',
+      HttpHost: 'http://huabei-pool.minerbabe.com',
       HttpPort: 8888,
 
       // Stratum mining endpoint
-      StratumHost: 'shengupiao.com',
+      StratumHost: 'huabei-pool.minerbabe.com',
       StratumPort: 8008,
 
       // Fee and payout details

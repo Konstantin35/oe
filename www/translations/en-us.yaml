@@ -6,8 +6,8 @@ app:
   miners: 'Miners'
   about: 'About'
 index:
-  title: 'New Block'
-  featureTitle: 'Why NewBlock ?'
+  title: 'Minerbabe Pool'
+  featureTitle: 'Why MinerbabePool ?'
   lookupTitle: 'Your Stats & Payment History'
   lookupPlaceholder: 'Enter Your Ethereum Address'
   lookup: 'lookup'
@@ -41,32 +41,32 @@ index:
     <p>
       <strong>Full example:</strong>
       <pre>
-        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
-        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei.newblock.org:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
+        LINUX : ./ethdcrminer64 -epool <b style=\"color:red;\">huabei-pool.minerbabe.com:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1\n
+        WINDOWS : ethdcrminer64.exe -epool <b style=\"color:red;\">huabei-pool.minerbabe.com:8008</b> -ewal <b style=\"color:red;\">YOUR_ETH_ADDRESS</b>.<b style=\"color:red;\">RIG_ID</b> -mode 1
       </pre>
     </p>
     <dl class=\"dl-horizontal\">
-      <dt><b style=\"color:red;\">huabei.newblock.org:8008</b></dt>
+      <dt><b style=\"color:red;\">huabei-pool.minerbabe.com:8008</b></dt>
       <dd>
-        <p>NewBlock has many servers around the world, you can choose one from:</p>
+        <p>MinerbabePool has many servers around the world, you can choose one from:</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
             <th class=\"info\" colspan=\"2\">ETH</th> 
           </tr>
           <tr>
-            <td>ETH 华北 PPLNS</td><td>huabei.newblock.org:8008</td>
+            <td>ETH 华北 PPLNS</td><td>huabei-pool.minerbabe.com:8008</td>
           </tr>
           <tr>
-            <td>ETH 华北 PPS</td><td>huabei.newblock.org:8018</td>
+            <td>ETH 华北 PPS</td><td>huabei-pool.minerbabe.com:8018</td>
           </tr>
           <tr>
             <th class=\"success\" colspan=\"2\">ETC</th>
           </tr>
           <tr>
-            <td>ETC 华北 PPLNS</td><td>huabei.newblock.org:8009</td>
+            <td>ETC 华北 PPLNS</td><td>huabei-pool.minerbabe.com:8009</td>
           </tr>
           <tr>
-            <td>ETC 华北 PPS</td><td>huabei.newblock.org:8019</td>
+            <td>ETC 华北 PPS</td><td>huabei-pool.minerbabe.com:8019</td>
           </tr>
         </table>
       </dd>
