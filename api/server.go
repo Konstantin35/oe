@@ -27,6 +27,7 @@ type ApiConfig struct {
 	Blocks               int64  `json:"blocks"`
 	PurgeOnly            bool   `json:"purgeOnly"`
 	PurgeInterval        string `json:"purgeInterval"`
+	SaleStatsInterval    string `json:"saleStatsInterval"`
 }
 
 type ApiServer struct {
@@ -73,6 +74,10 @@ func (s *ApiServer) Start() {
 	purgeTimer := time.NewTimer(purgeIntv)
 	log.Printf("Set purge interval to %v", purgeIntv)
 
+	saleIntv := util.MustParseDuration(s.config.SaleStatsInterval)
+	saleTimer := time.NewTimer(saleIntv)
+	log.Printf("Set sale interval to %v", saleIntv)
+
 	sort.Ints(s.config.LuckWindow)
 
 	if s.config.PurgeOnly {
@@ -80,6 +85,7 @@ func (s *ApiServer) Start() {
 	} else {
 		s.purgeStale()
 		s.collectStats()
+		s.getSaleStats()
 	}
 
 	go func() {
@@ -90,6 +96,11 @@ func (s *ApiServer) Start() {
 					s.collectStats()
 				}
 				statsTimer.Reset(s.statsIntv)
+			case <-saleTimer.C:
+				if !s.config.PurgeOnly {
+					s.getSaleStats()
+				}
+				saleTimer.Reset(saleIntv)
 			case <-purgeTimer.C:
 				s.purgeStale()
 				purgeTimer.Reset(purgeIntv)
@@ -147,52 +158,6 @@ func (s *ApiServer) collectStats() {
 			log.Printf("Failed to fetch luck stats from backend: %v", err)
 			return
 		}
-	}
-
-	// calc hashrate by sales
-	if _, ok := stats["miners"]; ok {
-
-		sale2HR := make(map[string]int64)
-		sale2THR := make(map[string]int64)
-		saleStats := make(map[string]interface{})
-
-		for id, _ := range stats["miners"].(map[string]storage.Miner) {
-			workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
-			if err != nil {
-				log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
-				continue
-			}
-
-			if _, ok := workerStats["workers"]; ok {
-				for id, worker := range workerStats["workers"].(map[string]storage.Worker) {
-					fields := strings.SplitN(id, "_", 2)
-					saleId := "MinerBabe"
-					if len(fields) == 2 {
-						saleId = fields[0]
-					}
-
-					if _, ok := sale2HR[saleId]; ok {
-						sale2HR[saleId] = sale2HR[saleId] + worker.HR
-					} else {
-						sale2HR[saleId] = worker.HR
-					}
-
-					if _, ok := sale2THR[saleId]; ok {
-						sale2THR[saleId] = sale2THR[saleId] + worker.TotalHR
-					} else {
-						sale2THR[saleId] = worker.TotalHR
-					}
-				}
-			}
-		}
-
-		for saleId, _ := range sale2HR {
-			s := make(map[string]int64)
-			s["hr"] = sale2HR[saleId]
-			s["thr"] = sale2THR[saleId]
-			saleStats[saleId] = s
-		}
-		s.saleStats.Store(saleStats)
 	}
 
 	s.stats.Store(stats)
@@ -385,4 +350,62 @@ func (s *ApiServer) SalesIndex(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("Error serializing API response: ", err)
 	}
+}
+
+func (s *ApiServer) getSaleStats() {
+	start := time.Now()
+
+	stats := s.getStats()
+	if stats == nil {
+		log.Printf("Stats null")
+		return
+	}
+
+	// calc hashrate by sales
+	if _, ok := stats["miners"]; ok {
+
+		sale2HR := make(map[string]int64)
+		sale2THR := make(map[string]int64)
+		saleStats := make(map[string]interface{})
+
+		for id, _ := range stats["miners"].(map[string]storage.Miner) {
+			workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
+			if err != nil {
+				log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
+				continue
+			}
+
+			if _, ok := workerStats["workers"]; ok {
+				for id, worker := range workerStats["workers"].(map[string]storage.Worker) {
+					fields := strings.SplitN(id, "_", 2)
+					saleId := "MinerBabe"
+					if len(fields) == 2 {
+						saleId = fields[0]
+					}
+
+					if _, ok := sale2HR[saleId]; ok {
+						sale2HR[saleId] = sale2HR[saleId] + worker.HR
+					} else {
+						sale2HR[saleId] = worker.HR
+					}
+
+					if _, ok := sale2THR[saleId]; ok {
+						sale2THR[saleId] = sale2THR[saleId] + worker.TotalHR
+					} else {
+						sale2THR[saleId] = worker.TotalHR
+					}
+				}
+			}
+		}
+
+		for saleId, _ := range sale2HR {
+			s := make(map[string]int64)
+			s["hr"] = sale2HR[saleId]
+			s["thr"] = sale2THR[saleId]
+			saleStats[saleId] = s
+		}
+		s.saleStats.Store(saleStats)
+	}
+
+	log.Printf("Get sale stats finished %s", time.Since(start))
 }
