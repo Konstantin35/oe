@@ -5,12 +5,10 @@ module.exports = function(environment) {
   var coin = 'eth'
   if (coin === 'eth') {
     ExplorerBase = 'https://etherscan.io'
-    /*ApiUrl = 'http://shengupiao.com:8090/'*/
     ApiUrl = 'http://39.107.38.195:8090/'
   }
   if (coin === 'etc') {
     ExplorerBase = 'http://gastracker.io'
-    /*ApiUrl = 'http://shengupiao.com:8091/'*/
     ApiUrl = 'http://39.107.38.195:8091/'
   }
   var ENV = {
