@@ -6,7 +6,6 @@
 
 # dependencies
 /node_modules
-/node_modules.1
 /bower_components
 
 # misc
