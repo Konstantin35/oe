@@ -9,6 +9,6 @@
     "font-awesome": "fontawesome#~4.7.0"
   },
   "resolutions": {
-    "ember": "lts-2-8"
+    "ember": "^2.18.2"
   }
 }
