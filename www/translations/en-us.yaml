@@ -5,6 +5,7 @@ app:
   payments: 'Payments'
   miners: 'Miners'
   about: 'About'
+  minerBabe: 'Miner Babe'
 index:
   title: 'Minerbabe Pool'
   featureTitle: 'Why MinerbabePool ?'
@@ -58,15 +59,6 @@ index:
           </tr>
           <tr>
             <td>ETH 华北 PPS</td><td>huabei-pool.minerbabe.com:8018</td>
-          </tr>
-          <tr>
-            <th class=\"success\" colspan=\"2\">ETC</th>
-          </tr>
-          <tr>
-            <td>ETC 华北 PPLNS</td><td>huabei-pool.minerbabe.com:8009</td>
-          </tr>
-          <tr>
-            <td>ETC 华北 PPS</td><td>huabei-pool.minerbabe.com:8019</td>
           </tr>
         </table>
       </dd>
