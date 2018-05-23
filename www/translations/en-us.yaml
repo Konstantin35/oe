@@ -5,7 +5,7 @@ app:
   payments: 'Payments'
   miners: 'Miners'
   about: 'About'
-  minerBabe: 'Miner Babe'
+  minerBabe: 'Miner Babe Sass'
 index:
   title: 'Minerbabe Pool'
   featureTitle: 'Why MinerbabePool ?'

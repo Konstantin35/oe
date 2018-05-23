@@ -5,7 +5,7 @@ app:
   payments: '支付'
   miners: '矿工'
   about: '关于'
-  minerBabe: '矿宝'
+  minerBabe: '矿宝平台'
 index:
   title: '新块'
   featureTitle: '为何选择 MinerbabePool？'
