@@ -52,6 +52,7 @@ index:
         <p>MinerbabePool has many servers around the world, you can choose one from:</p>
         <table class=\"table table-bordered table-condensed\">
           <tr>
+            <img src=\"/eth.png\" style=\"width: 20px;height:20px\" >
             <th class=\"info\" colspan=\"2\">ETH</th> 
           </tr>
           <tr>
