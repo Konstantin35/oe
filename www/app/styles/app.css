@@ -183,3 +183,7 @@ h4.note {
 .text-info {
   color: #fdbc8f;
 }
+
+.displayNone {
+	display: none;
+}
