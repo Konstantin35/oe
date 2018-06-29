@@ -12,21 +12,25 @@ import (
 	"github.com/mcarloai/open-ethereum-pool/util"
 )
 
+const (
+	MAXGRAPHNUM = 48
+)
+
 type Config struct {
-    SentinelEnabled bool        `json:"sentinelEnabled"`
-    Endpoint        string      `json:"endpoint"`
-    Password        string      `json:"password"`
-    Database        int64       `json:"database"`
-    PoolSize        int         `json:"poolSize"`
-    MasterName      string      `json:"masterName"`
-    SentinelAddrs   []string    `json:"sentinelAddrs"`
+	SentinelEnabled bool     `json:"sentinelEnabled"`
+	Endpoint        string   `json:"endpoint"`
+	Password        string   `json:"password"`
+	Database        int64    `json:"database"`
+	PoolSize        int      `json:"poolSize"`
+	MasterName      string   `json:"masterName"`
+	SentinelAddrs   []string `json:"sentinelAddrs"`
 }
 
 type RedisClient struct {
-	client *redis.Client
-	prefix string
-	pps bool
-	partner string
+	client                *redis.Client
+	prefix                string
+	pps                   bool
+	partner               string
 	partnerCommissionRate int64
 }
 
@@ -52,8 +56,8 @@ type BlockData struct {
 }
 
 type ShareChartElement struct {
-	Time			int64 `json:"time"`
-	ShareNum		int64 `json:"shareNum"`
+	Time     int64 `json:"time"`
+	ShareNum int64 `json:"shareNum"`
 }
 
 func (b *BlockData) RewardInShannon() int64 {
@@ -86,30 +90,31 @@ type Miner struct {
 
 type Worker struct {
 	Miner
-	TotalHR int64 `json:"hr2"`
-	IsPPS   bool  `json:"isPPS"`
+	GraphHR [MAXGRAPHNUM]int64 `json:"graphHr"`
+	TotalHR int64              `json:"hr2"`
+	IsPPS   bool               `json:"isPPS"`
 }
 
 func NewRedisClient(cfg *Config, prefix string, pps bool, partner string, partnerCommissionRate int64) *RedisClient {
-    var client *redis.Client
-    if cfg.SentinelEnabled && len(cfg.MasterName) != 0 && len(cfg.SentinelAddrs) != 0 {
-        // sentinel mode
-        client = redis.NewFailoverClient(&redis.FailoverOptions{
-            MasterName:     cfg.MasterName,
-            SentinelAddrs:  cfg.SentinelAddrs,
-            Password:       cfg.Password,
-            DB:             cfg.Database,
-            PoolSize:       cfg.PoolSize,
-        })
-    } else {
-        // single instance
-        client = redis.NewClient(&redis.Options{
-            Addr:     cfg.Endpoint,
-            Password: cfg.Password,
-            DB:       cfg.Database,
-            PoolSize: cfg.PoolSize,
-        })
-    }
+	var client *redis.Client
+	if cfg.SentinelEnabled && len(cfg.MasterName) != 0 && len(cfg.SentinelAddrs) != 0 {
+		// sentinel mode
+		client = redis.NewFailoverClient(&redis.FailoverOptions{
+			MasterName:    cfg.MasterName,
+			SentinelAddrs: cfg.SentinelAddrs,
+			Password:      cfg.Password,
+			DB:            cfg.Database,
+			PoolSize:      cfg.PoolSize,
+		})
+	} else {
+		// single instance
+		client = redis.NewClient(&redis.Options{
+			Addr:     cfg.Endpoint,
+			Password: cfg.Password,
+			DB:       cfg.Database,
+			PoolSize: cfg.PoolSize,
+		})
+	}
 	return &RedisClient{client: client, prefix: prefix, pps: pps, partner: partner, partnerCommissionRate: partnerCommissionRate}
 }
 
@@ -210,7 +215,7 @@ func (r *RedisClient) WriteShare(login, id string, params []string, diff int64, 
 		tx.HIncrBy(r.formatKey("stats"), "roundShares", diff)
 		return nil
 	})
-    r.WriteAcceptedShare(login, params[0])
+	r.WriteAcceptedShare(login, params[0])
 	return false, err
 }
 
@@ -264,11 +269,11 @@ func (r *RedisClient) WriteBlock(login, id string, params []string, diff, roundD
 
 func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string, diff int64, expire time.Duration) {
 	if r.pps {
-		tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, diff * (100 - r.partnerCommissionRate) / 100)
-		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login + "$pps", diff)
+		tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, diff*(100-r.partnerCommissionRate)/100)
+		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login+"$pps", diff)
 		if util.IsValidHexAddress(r.partner) {
 			//tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff / 100 * (1 + r.partnerCommissionRate))
-			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff * r.partnerCommissionRate / 100) //渠道商抽水比例
+			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), r.partner, diff*r.partnerCommissionRate/100) //渠道商抽水比例
 		}
 	} else {
 		tx.HIncrBy(r.formatKey("shares", "roundCurrent"), login, diff)
@@ -285,8 +290,8 @@ func (r *RedisClient) writeShare(tx *redis.Multi, ms, ts int64, login, id string
 }
 
 func (r *RedisClient) WriteAcceptedShare(login string, share string) error {
-	r.client.ZRemRangeByScore(r.formatKey("acceptedShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
-    _, err := r.client.ZAdd(r.formatKey("acceptedShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	r.client.ZRemRangeByScore(r.formatKey("acceptedShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour*-1).Unix(), 10))
+	_, err := r.client.ZAdd(r.formatKey("acceptedShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
 	if err != nil {
 		return err
 	}
@@ -294,52 +299,52 @@ func (r *RedisClient) WriteAcceptedShare(login string, share string) error {
 	t := time.Now()
 	rounded := time.Date(t.Year(), t.Month(), t.Day(), t.Hour(), 0, 0, 0, t.Location()).Unix()
 	r.client.ZRemRangeByScore(r.formatKey("shareNum", login), "-inf", strconv.FormatInt(time.Now().AddDate(0, 0, -1).Unix(), 10))
-    _, err = r.client.ZAdd(r.formatKey("shareNum", login), redis.Z{Score: float64(rounded), Member: share}).Result()
+	_, err = r.client.ZAdd(r.formatKey("shareNum", login), redis.Z{Score: float64(rounded), Member: share}).Result()
 	return err
 }
 
 func (r *RedisClient) WriteStaleShare(login string, share string) error {
-	r.client.ZRemRangeByScore(r.formatKey("staleShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
-    _, err := r.client.ZAdd(r.formatKey("staleShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	r.client.ZRemRangeByScore(r.formatKey("staleShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour*-1).Unix(), 10))
+	_, err := r.client.ZAdd(r.formatKey("staleShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
 	return err
 }
 
 func (r *RedisClient) WriteInvalidShare(login string, share string) error {
-	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
-    _, err := r.client.ZAdd(r.formatKey("invalidShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour*-1).Unix(), 10))
+	_, err := r.client.ZAdd(r.formatKey("invalidShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
 	return err
 }
 
 func (r *RedisClient) WriteDuplicateShare(login string, share string) error {
-	r.client.ZRemRangeByScore(r.formatKey("duplicateShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10))
-    _, err := r.client.ZAdd(r.formatKey("duplicateShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
+	r.client.ZRemRangeByScore(r.formatKey("duplicateShare", login), "-inf", strconv.FormatInt(time.Now().Add(time.Hour*-1).Unix(), 10))
+	_, err := r.client.ZAdd(r.formatKey("duplicateShare", login), redis.Z{Score: float64(time.Now().Unix()), Member: share}).Result()
 	return err
 }
 
 // accepted, stale, duplicate, invalid
 func (r *RedisClient) GetShareRatio(login string) [4]int {
-    oneHourAgo := strconv.FormatInt(time.Now().Add(time.Hour * -1).Unix(), 10)
+	oneHourAgo := strconv.FormatInt(time.Now().Add(time.Hour*-1).Unix(), 10)
 	r.client.ZRemRangeByScore(r.formatKey("acceptedShare", login), "-inf", oneHourAgo)
 	r.client.ZRemRangeByScore(r.formatKey("staleShare", login), "-inf", oneHourAgo)
 	r.client.ZRemRangeByScore(r.formatKey("duplicateShare", login), "-inf", oneHourAgo)
 	r.client.ZRemRangeByScore(r.formatKey("invalidShare", login), "-inf", oneHourAgo)
-    accepted, err := r.client.ZCount(r.formatKey("acceptedShare", login), "-inf", "+inf").Result()
-    if err != nil {
-        accepted = 0
-    }
-    stale, err := r.client.ZCount(r.formatKey("staleShare", login), "-inf", "+inf").Result()
-    if err != nil {
-        stale = 0
-    }
-    duplicate, err := r.client.ZCount(r.formatKey("duplicateShare", login), "-inf", "+inf").Result()
-    if err != nil {
-        duplicate = 0
-    }
-    invalid, err := r.client.ZCount(r.formatKey("invalidShare", login), "-inf", "+inf").Result()
-    if err != nil {
-        invalid = 0
-    }
-    return [4]int{int(accepted), int(stale), int(duplicate), int(invalid)}
+	accepted, err := r.client.ZCount(r.formatKey("acceptedShare", login), "-inf", "+inf").Result()
+	if err != nil {
+		accepted = 0
+	}
+	stale, err := r.client.ZCount(r.formatKey("staleShare", login), "-inf", "+inf").Result()
+	if err != nil {
+		stale = 0
+	}
+	duplicate, err := r.client.ZCount(r.formatKey("duplicateShare", login), "-inf", "+inf").Result()
+	if err != nil {
+		duplicate = 0
+	}
+	invalid, err := r.client.ZCount(r.formatKey("invalidShare", login), "-inf", "+inf").Result()
+	if err != nil {
+		invalid = 0
+	}
+	return [4]int{int(accepted), int(stale), int(duplicate), int(invalid)}
 }
 
 func (r *RedisClient) GetShareChart(login string) ([]*ShareChartElement, error) {
@@ -356,10 +361,10 @@ func (r *RedisClient) GetShareChart(login string) ([]*ShareChartElement, error) 
 	var result []*ShareChartElement
 	for _, row := range rows {
 		t := int64(row.Score)
-		if len(result) == 0 || result[len(result) - 1].Time != t {
+		if len(result) == 0 || result[len(result)-1].Time != t {
 			result = append(result, &ShareChartElement{Time: t, ShareNum: 1})
 		} else {
-			result[len(result) - 1].ShareNum += 1
+			result[len(result)-1].ShareNum += 1
 		}
 	}
 	return result, nil
@@ -595,7 +600,7 @@ func (r *RedisClient) WritePpsRewards(rewards, shares map[string]int64) error {
 
 		for login, amount := range rewards {
 			tx.HIncrBy(r.formatKey("miners", login), "balance", amount)
-			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, shares[login] * -1)
+			tx.HIncrBy(r.formatKey("shares", "ppsUnpaid"), login, shares[login]*-1)
 		}
 		return nil
 	})
@@ -897,6 +902,11 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 		}
 		worker.HR = worker.HR / boundary
 
+		for k, v := range worker.GraphHR {
+			worker.GraphHR[k] = v / smallWindow
+		}
+		worker.GraphHR[0] /= boundary
+
 		boundary = timeOnline
 		if timeOnline >= largeWindow {
 			boundary = largeWindow
@@ -1043,7 +1053,14 @@ func convertWorkersStats(window int64, raw *redis.ZSliceCmd) map[string]Worker {
 		if score >= now-window {
 			worker.HR += share
 		}
-		if len(parts) > 3 && parts[3] == "pps"{
+
+		// Add for graph window if matches
+		index := (now - score) / window
+		if index < MAXGRAPHNUM {
+			worker.GraphHR[index] += share
+		}
+
+		if len(parts) > 3 && parts[3] == "pps" {
 			worker.IsPPS = true
 		} else {
 			worker.IsPPS = false

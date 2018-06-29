@@ -319,8 +319,14 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 		s.miners[login] = reply
 	}
 
+	nodes, err := s.backend.GetNodeStates()
+	if err != nil {
+		log.Printf("Failed to get nodes stats from backend: %v", err)
+	}
+	reply.stats["difficulty"] = nodes[0]["difficulty"]
+
 	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(reply.stats)
+	err = json.NewEncoder(w).Encode(reply.stats)
 	if err != nil {
 		log.Println("Error serializing API response: ", err)
 	}
