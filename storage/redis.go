@@ -1012,22 +1012,24 @@ func (r *RedisClient) SaveMinerHashrate(hashrate int64, login string) (err error
 	if len >= MAXGRAPHNUM {
 		_, err = tx.LPop(key).Result()
 	}
-	_, err = tx.RPush(key, string(hashrate)).Result()
+	value := strconv.FormatInt(hashrate, 10)
+	_, err = tx.RPush(key, value).Result()
 	return err
 }
 
 func (r *RedisClient) GetHashrateChart(login string) (hashrates []int64, err error) {
+	hashrates = make([]int64, 0)
 	tx := r.client.Multi()
 	defer tx.Close()
 	result, err := tx.LRange(r.formatKey("graphhashrate", login), 0, -1).Result()
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	for _, v := range result {
 		rate, err := strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			return nil, err
+			return hashrates, err
 		}
 		hashrates = append(hashrates, rate)
 	}
