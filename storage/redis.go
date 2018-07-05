@@ -90,9 +90,8 @@ type Miner struct {
 
 type Worker struct {
 	Miner
-	GraphHR [MAXGRAPHNUM]int64 `json:"graphHr"`
-	TotalHR int64              `json:"hr2"`
-	IsPPS   bool               `json:"isPPS"`
+	TotalHR int64 `json:"hr2"`
+	IsPPS   bool  `json:"isPPS"`
 }
 
 func NewRedisClient(cfg *Config, prefix string, pps bool, partner string, partnerCommissionRate int64) *RedisClient {
@@ -902,11 +901,6 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 		}
 		worker.HR = worker.HR / boundary
 
-		for k, v := range worker.GraphHR {
-			worker.GraphHR[k] = v / smallWindow
-		}
-		worker.GraphHR[0] /= boundary
-
 		boundary = timeOnline
 		if timeOnline >= largeWindow {
 			boundary = largeWindow
@@ -1007,6 +1001,39 @@ func convertCandidateResults(raw *redis.ZSliceCmd) []*BlockData {
 	return result
 }
 
+func (r *RedisClient) SaveMinerHashrate(hashrate int64, login string) (err error) {
+	key := r.formatKey("graphhashrate", login)
+	tx := r.client.Multi()
+	defer tx.Close()
+	len, err := tx.LLen(key).Result()
+	if err != nil {
+		return err
+	}
+	if len >= MAXGRAPHNUM {
+		_, err = tx.LPop(key).Result()
+	}
+	_, err = tx.RPush(key, string(hashrate)).Result()
+	return err
+}
+
+func (r *RedisClient) GetHashrateChart(login string) (hashrates []int64, err error) {
+	tx := r.client.Multi()
+	defer tx.Close()
+	result, err := tx.LRange(r.formatKey("graphhashrate", login), 0, -1).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range result {
+		rate, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return nil, err
+		}
+		hashrates = append(hashrates, rate)
+	}
+	return
+}
+
 func convertBlockResults(rows ...*redis.ZSliceCmd) []*BlockData {
 	var result []*BlockData
 	for _, row := range rows {
@@ -1052,12 +1079,6 @@ func convertWorkersStats(window int64, raw *redis.ZSliceCmd) map[string]Worker {
 		// Add for small window if matches
 		if score >= now-window {
 			worker.HR += share
-		}
-
-		// Add for graph window if matches
-		index := (now - score) / window
-		if index < MAXGRAPHNUM {
-			worker.GraphHR[index] += share
 		}
 
 		if len(parts) > 3 && parts[3] == "pps" {

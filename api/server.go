@@ -28,6 +28,7 @@ type ApiConfig struct {
 	PurgeOnly            bool   `json:"purgeOnly"`
 	PurgeInterval        string `json:"purgeInterval"`
 	SaleStatsInterval    string `json:"saleStatsInterval"`
+	HashrateInterval     string `json:"hashrateInterval"`
 }
 
 type ApiServer struct {
@@ -78,6 +79,10 @@ func (s *ApiServer) Start() {
 	saleTimer := time.NewTimer(saleIntv)
 	log.Printf("Set sale interval to %v", saleIntv)
 
+	hashrateIntv := util.MustParseDuration(s.config.HashrateInterval)
+	hashrateTimer := time.NewTimer(hashrateIntv)
+	log.Printf("Set hashrate interval to %v", hashrateIntv)
+
 	sort.Ints(s.config.LuckWindow)
 
 	if s.config.PurgeOnly {
@@ -104,6 +109,9 @@ func (s *ApiServer) Start() {
 			case <-purgeTimer.C:
 				s.purgeStale()
 				purgeTimer.Reset(purgeIntv)
+			case <-hashrateTimer.C:
+				s.collectHashrate()
+				hashrateTimer.Reset(hashrateIntv)
 			}
 		}
 	}()
@@ -162,6 +170,12 @@ func (s *ApiServer) collectStats() {
 
 	s.stats.Store(stats)
 	log.Printf("Stats collection finished %s", time.Since(start))
+}
+
+func (s *ApiServer) collectHashrate() {
+	for key, miner := range s.miners {
+		s.backend.SaveMinerHashrate(miner.stats["currentHashrate"].(int64), key)
+	}
 }
 
 func (s *ApiServer) StatsIndex(w http.ResponseWriter, r *http.Request) {
@@ -313,6 +327,13 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 			stats["shareChart"] = shareChart
 		} else {
 			log.Printf("Failed to fetch shareChart from backend: %v", err)
+		}
+
+		graphHashrate, err := s.backend.GetHashrateChart(login)
+		if err == nil {
+			stats["graphHr"] = graphHashrate
+		} else {
+			log.Printf("Failed to fetch hashrateChart from backend: %v", err)
 		}
 
 		reply = &Entry{stats: stats, updatedAt: now}
