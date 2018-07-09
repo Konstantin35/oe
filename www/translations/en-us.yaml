@@ -127,6 +127,7 @@ account:
   workersOnline: 'Workers Online: '
   workers: 'Workers'
   payouts: 'Payouts'
+  hashrate30s: ' Hashrate (30s): '
   hashrate30m: ' Hashrate (30m): '
   hashrate3h: '  Hashrate (24h): '
   shareStat: 'Share (last 1h)：'

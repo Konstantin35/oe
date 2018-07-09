@@ -133,6 +133,7 @@ account:
   workersOnline: '在线矿机：'
   workers: '矿机'
   payouts: '支付'
+  hashrate30s: '算力 (30s)：'
   hashrate30m: '算力 (30m)：'
   hashrate3h: '算力 (24h)：'
   shareStat: 'Share 统计 (1h)：'

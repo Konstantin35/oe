@@ -32,6 +32,7 @@
         </div>
         {{/if}}
         <div style="display: block;"><i class="fa fa-gears"></i>{{t 'account.workersOnline'}}<span>{{format-number model.workersOnline}}</span></div>
+        <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.hashrate30s'}}<span>{{format-hashrate model.imHashrate}}</span></div>
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.hashrate30m'}}<span>{{format-hashrate model.currentHashrate}}</span></div>
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.hashrate3h'}}<span>{{format-hashrate model.hashrate}}</span></div>
         <div style="display: block;"><i class="fa fa-tachometer"></i>{{t 'account.shareStat'}}<span>
