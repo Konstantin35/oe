@@ -55,11 +55,12 @@ func NewApiServer(cfg *ApiConfig, backend *storage.RedisClient) *ApiServer {
 	hashrateLargeWindow := util.MustParseDuration(cfg.HashrateLargeWindow)
 	hashrateLittleWindow := util.MustParseDuration(cfg.HashrateLittleWindow)
 	return &ApiServer{
-		config:              cfg,
-		backend:             backend,
-		hashrateWindow:      hashrateWindow,
-		hashrateLargeWindow: hashrateLargeWindow,
-		miners:              make(map[string]*Entry),
+		config:               cfg,
+		backend:              backend,
+		hashrateWindow:       hashrateWindow,
+		hashrateLargeWindow:  hashrateLargeWindow,
+		hashrateLittleWindow: hashrateLittleWindow,
+		miners:               make(map[string]*Entry),
 	}
 }
 
@@ -399,7 +400,7 @@ func (s *ApiServer) getSaleStats() {
 		saleStats := make(map[string]interface{})
 
 		for id, _ := range stats["miners"].(map[string]storage.Miner) {
-			workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, id)
+			workerStats, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, s.hashrateLittleWindow, id)
 			if err != nil {
 				log.Printf("Failed to fetch sales stats from backend: %v, id: %v", err, id)
 				continue
