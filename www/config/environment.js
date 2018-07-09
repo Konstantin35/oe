@@ -54,7 +54,7 @@ module.exports = function(environment) {
     /* Override ApiUrl just for development, while you are customizing
       frontend markup and css theme on your workstation.
     */
-    // ENV.APP.ApiUrl = 'http://localhost:8080/'
+    ENV.APP.ApiUrl = 'http://39.107.57.83:80/'
     // ENV.APP.ApiUrl = 'http://123.56.89.3:8080/'
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
