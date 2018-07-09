@@ -84,6 +84,7 @@ func (b *BlockData) key() string {
 type Miner struct {
 	LastBeat  int64 `json:"lastBeat"`
 	HR        int64 `json:"hr"`
+	LittleHR  int64 `json:"LitHr"`
 	Offline   bool  `json:"offline"`
 	startedAt int64
 }
@@ -863,9 +864,10 @@ func (r *RedisClient) CollectStats(smallWindow time.Duration, maxBlocks, maxPaym
 	return stats, nil
 }
 
-func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login string) (map[string]interface{}, error) {
+func (r *RedisClient) CollectWorkersStats(sWindow, lWindow, litWindow time.Duration, login string) (map[string]interface{}, error) {
 	smallWindow := int64(sWindow / time.Second)
 	largeWindow := int64(lWindow / time.Second)
+	littleWindow := int64(litWindow / time.Second)
 	stats := make(map[string]interface{})
 
 	tx := r.client.Multi()
@@ -885,9 +887,10 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 
 	totalHashrate := int64(0)
 	currentHashrate := int64(0)
+	littleHashrate := int64(0)
 	online := int64(0)
 	offline := int64(0)
-	workers := convertWorkersStats(smallWindow, cmds[1].(*redis.ZSliceCmd))
+	workers := convertWorkersStats(smallWindow, littleWindow, cmds[1].(*redis.ZSliceCmd))
 
 	for id, worker := range workers {
 		timeOnline := now - worker.startedAt
@@ -900,6 +903,8 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 			boundary = smallWindow
 		}
 		worker.HR = worker.HR / boundary
+
+		worker.LittleHR = worker.LittleHR / littleWindow
 
 		boundary = timeOnline
 		if timeOnline >= largeWindow {
@@ -916,6 +921,7 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 
 		currentHashrate += worker.HR
 		totalHashrate += worker.TotalHR
+		littleHashrate += worker.LittleHR
 		workers[id] = worker
 	}
 	stats["workers"] = workers
@@ -924,6 +930,7 @@ func (r *RedisClient) CollectWorkersStats(sWindow, lWindow time.Duration, login 
 	stats["workersOffline"] = offline
 	stats["hashrate"] = totalHashrate
 	stats["currentHashrate"] = currentHashrate
+	stats["imHashrate"] = littleHashrate
 	return stats, nil
 }
 
@@ -1064,7 +1071,7 @@ func convertBlockResults(rows ...*redis.ZSliceCmd) []*BlockData {
 
 // Build per login workers's total shares map {'rig-1': 12345, 'rig-2': 6789, ...}
 // TS => diff, id, ms
-func convertWorkersStats(window int64, raw *redis.ZSliceCmd) map[string]Worker {
+func convertWorkersStats(window, litWindow int64, raw *redis.ZSliceCmd) map[string]Worker {
 	now := util.MakeTimestamp() / 1000
 	workers := make(map[string]Worker)
 
@@ -1081,6 +1088,11 @@ func convertWorkersStats(window int64, raw *redis.ZSliceCmd) map[string]Worker {
 		// Add for small window if matches
 		if score >= now-window {
 			worker.HR += share
+		}
+
+		// Add for little window if matches
+		if score >= now-litWindow {
+			worker.LittleHR += share
 		}
 
 		if len(parts) > 3 && parts[3] == "pps" {

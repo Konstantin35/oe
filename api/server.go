@@ -22,6 +22,7 @@ type ApiConfig struct {
 	StatsCollectInterval string `json:"statsCollectInterval"`
 	HashrateWindow       string `json:"hashrateWindow"`
 	HashrateLargeWindow  string `json:"hashrateLargeWindow"`
+	HashrateLittleWindow string `json:"hashrateLittleWindow"`
 	LuckWindow           []int  `json:"luckWindow"`
 	Payments             int64  `json:"payments"`
 	Blocks               int64  `json:"blocks"`
@@ -32,15 +33,16 @@ type ApiConfig struct {
 }
 
 type ApiServer struct {
-	config              *ApiConfig
-	backend             *storage.RedisClient
-	hashrateWindow      time.Duration
-	hashrateLargeWindow time.Duration
-	stats               atomic.Value
-	saleStats           atomic.Value
-	miners              map[string]*Entry
-	minersMu            sync.RWMutex
-	statsIntv           time.Duration
+	config               *ApiConfig
+	backend              *storage.RedisClient
+	hashrateWindow       time.Duration
+	hashrateLargeWindow  time.Duration
+	hashrateLittleWindow time.Duration
+	stats                atomic.Value
+	saleStats            atomic.Value
+	miners               map[string]*Entry
+	minersMu             sync.RWMutex
+	statsIntv            time.Duration
 }
 
 type Entry struct {
@@ -51,6 +53,7 @@ type Entry struct {
 func NewApiServer(cfg *ApiConfig, backend *storage.RedisClient) *ApiServer {
 	hashrateWindow := util.MustParseDuration(cfg.HashrateWindow)
 	hashrateLargeWindow := util.MustParseDuration(cfg.HashrateLargeWindow)
+	hashrateLittleWindow := util.MustParseDuration(cfg.HashrateLittleWindow)
 	return &ApiServer{
 		config:              cfg,
 		backend:             backend,
@@ -303,7 +306,7 @@ func (s *ApiServer) AccountIndex(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Failed to fetch stats from backend: %v", err)
 			return
 		}
-		workers, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, login)
+		workers, err := s.backend.CollectWorkersStats(s.hashrateWindow, s.hashrateLargeWindow, s.hashrateLittleWindow, login)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			log.Printf("Failed to fetch stats from backend: %v", err)
